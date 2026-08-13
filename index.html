@@ -1,0 +1,4724 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>SmartFran Cloud — Cuenta Corriente</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --navy: #0f0035;
+      --purple: #ae00ff;
+      --accent: #6e59ee;
+      --accent-soft: #ede9fb;
+      --white: #fff;
+      --g50: #f8f9fa;
+      --g100: #f0f0f4;
+      --g200: #e0e0e8;
+      --g400: #9494a8;
+      --g600: #5a5a72;
+      --g800: #1e1e2e;
+      --green: #1d9e75;
+      --green-s: #e8f7f2;
+      --amber: #ba7517;
+      --amber-s: #fef6e4;
+      --red: #e24b4a;
+      --red-s: #fdf0f0;
+      --blue: #3c5a9a;
+      --blue-s: #e8f0fe;
+      --font: 'Segoe UI', system-ui, sans-serif;
+      --r: 4px;
+      --rl: 8px
+    }
+
+    body {
+      font-family: var(--font);
+      background: #f4f4f8;
+      color: var(--g800);
+      font-size: 14px;
+      display: flex;
+      height: 100vh;
+      overflow: hidden
+    }
+
+    /* ── SIDEBAR ── */
+    .sb {
+      width: 200px;
+      background: var(--navy);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden
+    }
+
+    .sb::-webkit-scrollbar {
+      width: 3px
+    }
+
+    .sb::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, .15)
+    }
+
+    .sb-logo {
+      padding: 13px 16px 11px;
+      border-bottom: 1px solid rgba(255, 255, 255, .08)
+    }
+
+    .sb-logo b {
+      color: #fff;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -.3px
+    }
+
+    .sb-logo b span {
+      color: #a78bfa
+    }
+
+    .sb-logo small {
+      font-size: 9px;
+      color: rgba(255, 255, 255, .3);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      display: block;
+      margin-top: 1px
+    }
+
+    .sbi {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      color: rgba(255, 255, 255, .6);
+      font-size: 13px;
+      cursor: pointer;
+      transition: background .12s;
+      user-select: none
+    }
+
+    .sbi:hover {
+      background: rgba(255, 255, 255, .05)
+    }
+
+    .sbi.act {
+      background: rgba(174, 0, 255, .15);
+      color: #fff;
+      border-left: 3px solid var(--purple)
+    }
+
+    .sbi svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      opacity: .7
+    }
+
+    .sbi.act svg {
+      opacity: 1
+    }
+
+    .sbi .ic {
+      font-size: 14px;
+      width: 18px;
+      text-align: center;
+      flex-shrink: 0;
+      opacity: .7
+    }
+
+    .sbi.act .ic {
+      opacity: 1
+    }
+
+    .sbi .arr {
+      font-size: 9px;
+      opacity: .4;
+      margin-left: auto;
+      transition: transform .2s
+    }
+
+    .sbi.open .arr {
+      transform: rotate(180deg)
+    }
+
+    .sub {
+      display: none
+    }
+
+    .sub.on {
+      display: block
+    }
+
+    .sub .sbi {
+      padding-left: 36px;
+      font-size: 12.5px
+    }
+
+    .sub .sbi.act {
+      border-left: 3px solid var(--purple);
+      background: rgba(110, 89, 238, .25)
+    }
+
+    .sdiv {
+      height: 1px;
+      background: rgba(255, 255, 255, .07);
+      margin: 3px 0
+    }
+
+    .sb-grp {
+      padding: 14px 16px 5px;
+      font-size: 9.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: rgba(255, 255, 255, .25)
+    }
+
+    /* ── TOPBAR ── */
+    .tb {
+      position: fixed;
+      top: 0;
+      left: 200px;
+      right: 0;
+      height: 46px;
+      background: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 0 20px;
+      z-index: 200;
+      gap: 10px
+    }
+
+    .tb-info {
+      color: rgba(255, 255, 255, .7);
+      font-size: 12px;
+      text-align: right;
+      line-height: 1.4
+    }
+
+    .tb-av {
+      width: 30px;
+      height: 30px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700
+    }
+
+    /* ── MAIN ── */
+    .main {
+      padding-top: 46px;
+      flex: 1;
+      overflow-y: auto
+    }
+
+    .pg {
+      padding: 24px 28px;
+      display: none
+    }
+
+    .pg.on {
+      display: block
+    }
+
+    .back {
+      font-size: 13px;
+      color: var(--accent);
+      cursor: pointer;
+      margin-bottom: 13px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px
+    }
+
+    .back:hover {
+      text-decoration: underline
+    }
+
+    .ptitle {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--g800);
+      margin-bottom: 3px
+    }
+
+    .psub {
+      font-size: 13px;
+      color: var(--g400);
+      margin-bottom: 18px
+    }
+
+    /* ── TOOLBAR ── */
+    .tbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px
+    }
+
+    .srch {
+      position: relative;
+      flex: 1;
+      max-width: 420px
+    }
+
+    .srch input {
+      width: 100%;
+      padding: 8px 12px 8px 34px;
+      border: 1px solid var(--g200);
+      border-radius: var(--r);
+      font-size: 13px;
+      font-family: var(--font);
+      background: #fff;
+      outline: none;
+      transition: border-color .15s
+    }
+
+    .srch input:focus {
+      border-color: var(--accent)
+    }
+
+    .srch input::placeholder {
+      color: var(--g400)
+    }
+
+    .srch-i {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--g400);
+      font-size: 14px
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-family: var(--font);
+      font-weight: 500;
+      border-radius: var(--r);
+      cursor: pointer;
+      border: none;
+      transition: background .12s
+    }
+
+    .bp {
+      background: var(--accent);
+      color: #fff
+    }
+
+    .bp:hover {
+      background: #5a48d4
+    }
+
+    .bo {
+      background: #fff;
+      color: var(--g600);
+      border: 1px solid var(--g200)
+    }
+
+    .bo:hover {
+      border-color: var(--g400)
+    }
+
+    .bsm {
+      padding: 6px 11px;
+      font-size: 12px
+    }
+
+    .bgreen {
+      background: var(--green);
+      color: #fff
+    }
+
+    .bgreen:hover {
+      background: #178a64
+    }
+
+    /* ── PAGINACIÓN ── */
+    .pag {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 12px;
+      color: var(--g400)
+    }
+
+    .pag-l {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .pag-sel {
+      border: 1px solid var(--g200);
+      border-radius: var(--r);
+      padding: 3px 6px;
+      font-size: 12px;
+      font-family: var(--font);
+      color: var(--g600)
+    }
+
+    .pag-btns {
+      display: flex;
+      gap: 3px
+    }
+
+    .pb {
+      width: 26px;
+      height: 26px;
+      border: 1px solid var(--g200);
+      background: #fff;
+      border-radius: var(--r);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--g600)
+    }
+
+    /* ── TABLA ── */
+    .card {
+      background: #fff;
+      border: 1px solid var(--g200);
+      border-radius: var(--rl);
+      overflow: hidden;
+      margin-bottom: 14px
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    thead th {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--g600);
+      border-bottom: 1px solid var(--g200);
+      background: var(--g50);
+      white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: .03em
+    }
+
+    thead th.sort {
+      cursor: pointer;
+      user-select: none
+    }
+
+    thead th.sort:hover {
+      color: var(--accent)
+    }
+
+    thead th.sort-act {
+      color: var(--accent)
+    }
+
+    tbody tr {
+      border-bottom: 1px solid var(--g100);
+      transition: background .1s
+    }
+
+    tbody tr:last-child {
+      border-bottom: none
+    }
+
+    tbody tr:hover {
+      background: var(--g50)
+    }
+
+    tbody td {
+      padding: 11px 14px;
+      font-size: 13px;
+      vertical-align: middle
+    }
+
+    .ci {
+      width: 30px;
+      height: 30px;
+      background: var(--accent-soft);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0
+    }
+
+    .ci svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--accent)
+    }
+
+    /* ── BADGES ── */
+    .bdg {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 9px;
+      border-radius: 99px
+    }
+
+    .bdg-g {
+      background: var(--green-s);
+      color: var(--green)
+    }
+
+    .bdg-r {
+      background: var(--red-s);
+      color: var(--red)
+    }
+
+    .bdg-a {
+      background: var(--amber-s);
+      color: var(--amber)
+    }
+
+    .bdg-gr {
+      background: var(--g100);
+      color: var(--g400)
+    }
+
+    .bdg-p {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(110, 89, 238, .2)
+    }
+
+    .bdg-b {
+      background: var(--blue-s);
+      color: var(--blue);
+      border: 1px solid rgba(60, 90, 154, .2)
+    }
+
+    /* ── 3-DOT ── */
+    .mw {
+      position: relative
+    }
+
+    .db {
+      width: 28px;
+      height: 28px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--r);
+      color: var(--g400);
+      font-size: 20px;
+      line-height: 1
+    }
+
+    .db:hover {
+      background: var(--g100);
+      color: var(--g600)
+    }
+
+    .dd {
+      display: none;
+      position: absolute;
+      right: 0;
+      top: 32px;
+      background: #fff;
+      border: 1px solid var(--g200);
+      border-radius: var(--rl);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+      min-width: 170px;
+      z-index: 300;
+      overflow: hidden
+    }
+
+    .dd.on {
+      display: block;
+      animation: fi .1s ease
+    }
+
+    @keyframes fi {
+      from {
+        opacity: 0;
+        transform: translateY(-4px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .ddi {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 14px;
+      font-size: 13px;
+      color: var(--g600);
+      cursor: pointer;
+      transition: background .1s
+    }
+
+    .ddi:hover {
+      background: var(--g50);
+      color: var(--g800)
+    }
+
+    .ddi svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0
+    }
+
+    .ddi.dan {
+      color: var(--red)
+    }
+
+    .ddi.dan:hover {
+      background: var(--red-s)
+    }
+
+    .ddiv {
+      height: 1px;
+      background: var(--g100);
+      margin: 2px 0
+    }
+
+    /* ── FORM ── */
+    .fc {
+      background: #fff;
+      border: 1px solid var(--g200);
+      border-radius: var(--rl);
+      padding: 20px 22px;
+      margin-bottom: 14px
+    }
+
+    .fst {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--g600);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: .05em
+    }
+
+    .fg2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px
+    }
+
+    .fg3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 14px
+    }
+
+    .fld {
+      position: relative
+    }
+
+    .fld-wrap {
+      position: relative;
+      border: 1px solid var(--g200);
+      border-radius: var(--r);
+      background: #fff;
+      transition: border-color .15s
+    }
+
+    .fld-wrap:focus-within {
+      border-color: var(--accent)
+    }
+
+    .fld-wrap.hv label,
+    .fld-wrap:focus-within label {
+      top: 0;
+      font-size: 10px;
+      color: var(--accent);
+      transform: translateY(-50%)
+    }
+
+    .fld-wrap label {
+      position: absolute;
+      top: 50%;
+      left: 11px;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: var(--g400);
+      transition: all .15s;
+      pointer-events: none;
+      background: #fff;
+      padding: 0 2px
+    }
+
+    .fld-wrap input,
+    .fld-wrap select,
+    .fld-wrap textarea {
+      width: 100%;
+      padding: 14px 11px 5px;
+      border: none;
+      border-radius: var(--r);
+      font-size: 13px;
+      font-family: var(--font);
+      color: var(--g800);
+      background: transparent;
+      outline: none;
+      appearance: none
+    }
+
+    .fld-hint {
+      font-size: 11px;
+      color: var(--g400);
+      margin-top: 3px;
+      padding-left: 2px
+    }
+
+    .farr {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--g400);
+      pointer-events: none;
+      font-size: 11px
+    }
+
+    .ff {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      padding-top: 14px
+    }
+
+    /* ── ALERT INFO ── */
+    .ai {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 9px 13px;
+      border-radius: var(--r);
+      font-size: 12px;
+      background: var(--accent-soft);
+      color: #3a2a9c;
+      border: 1px solid rgba(110, 89, 238, .2)
+    }
+
+    .aw {
+      background: var(--amber-s);
+      color: #7a4d0a;
+      border: 1px solid rgba(186, 117, 23, .2)
+    }
+
+    .ar {
+      background: var(--red-s);
+      color: #8b1a1a;
+      border: 1px solid rgba(226, 75, 74, .2)
+    }
+
+    .ag {
+      background: var(--green-s);
+      color: #145c44;
+      border: 1px solid rgba(29, 158, 117, .2)
+    }
+
+    .ai svg,
+    .aw svg,
+    .ar svg,
+    .ag svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    /* ── MODAL OVERLAY ── */
+    .mo-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 0, 53, .45);
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+      padding: 20px
+    }
+
+    .mo-overlay.on {
+      display: flex
+    }
+
+    @keyframes moIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(.98)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1)
+      }
+    }
+
+    /* ── SLIDE-IN PANEL (Cobro) ── */
+    .panel-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 0, 53, .35);
+      z-index: 600
+    }
+
+    .panel-overlay.on {
+      display: flex;
+      justify-content: flex-end
+    }
+
+    .panel {
+      width: 420px;
+      height: 100%;
+      background: #fff;
+      box-shadow: -4px 0 32px rgba(0, 0, 0, .18);
+      display: flex;
+      flex-direction: column;
+      animation: slideIn .18s ease
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%)
+      }
+
+      to {
+        transform: translateX(0)
+      }
+    }
+
+    .panel-hdr {
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid var(--g100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--g800)
+    }
+
+    .panel-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      color: var(--g400);
+      line-height: 1;
+      padding: 4px;
+      border-radius: var(--r)
+    }
+
+    .panel-close:hover {
+      background: var(--g100)
+    }
+
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 22px
+    }
+
+    .panel-foot {
+      padding: 14px 22px;
+      border-top: 1px solid var(--g100);
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      flex-shrink: 0
+    }
+
+    /* ── KPI CARDS ── */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px
+    }
+
+    .kpi {
+      background: #fff;
+      border: 1px solid var(--g200);
+      border-radius: var(--rl);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px
+    }
+
+    .kpi-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--g400)
+    }
+
+    .kpi-val {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--g800)
+    }
+
+    .kpi-sub {
+      font-size: 11px;
+      color: var(--g400)
+    }
+
+    .kpi.red .kpi-val {
+      color: var(--red)
+    }
+
+    .kpi.green .kpi-val {
+      color: var(--green)
+    }
+
+    .kpi.amber .kpi-val {
+      color: var(--amber)
+    }
+
+    /* ── PROGRESS BAR ── */
+    .prog-wrap {
+      background: var(--g100);
+      border-radius: 99px;
+      height: 6px;
+      overflow: hidden;
+      margin-top: 4px
+    }
+
+    .prog-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .4s
+    }
+
+    .prog-fill.green {
+      background: var(--green)
+    }
+
+    .prog-fill.amber {
+      background: var(--amber)
+    }
+
+    .prog-fill.red {
+      background: var(--red)
+    }
+
+    /* ── FACTURACIÓN: SELECCIÓN ── */
+    .fac-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-bottom: 1px solid var(--g100);
+      transition: background .1s
+    }
+
+    .fac-row:hover {
+      background: var(--g50)
+    }
+
+    .fac-row:last-child {
+      border-bottom: none
+    }
+
+    .fac-chk {
+      padding: 11px 8px 11px 14px;
+      display: flex;
+      align-items: center
+    }
+
+    .fac-chk input[type=checkbox] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+      cursor: pointer
+    }
+
+    .fac-data {
+      flex: 1;
+      padding: 11px 14px 11px 0;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr;
+      gap: 0;
+      align-items: center;
+      font-size: 13px
+    }
+
+    .fac-data span {
+      padding-right: 8px
+    }
+
+    /* ── LIBRO MAYOR TABLA ── */
+    .lm-debit {
+      color: var(--red);
+      font-weight: 600;
+      font-family: monospace;
+      font-size: 12px
+    }
+
+    .lm-credit {
+      color: var(--green);
+      font-weight: 600;
+      font-family: monospace;
+      font-size: 12px
+    }
+
+    .lm-saldo-pos {
+      color: var(--red);
+      font-weight: 700;
+      font-family: monospace;
+      font-size: 12px
+    }
+
+    .lm-saldo-zero {
+      color: var(--green);
+      font-weight: 700;
+      font-family: monospace;
+      font-size: 12px
+    }
+
+    .lm-comp {
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .lm-comp-link {
+      color: var(--accent);
+      text-decoration: underline;
+      cursor: pointer;
+      font-size: 12px
+    }
+
+    .comp-pedido {
+      background: #e8f0fe;
+      color: #3c5a9a;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px
+    }
+
+    .comp-remito {
+      background: #fce8b2;
+      color: #7a5800;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px
+    }
+
+    .comp-factura {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px
+    }
+
+    .comp-recibo {
+      background: var(--green-s);
+      color: var(--green);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px
+    }
+
+    .comp-nc {
+      background: var(--red-s);
+      color: var(--red);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px
+    }
+
+    .comp-debito {
+      background: var(--amber-s);
+      color: var(--amber);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px
+    }
+
+    .comp-nd {
+      background: var(--amber-s);
+      color: var(--amber);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px
+    }
+
+    .comp-anulado {
+      background: var(--g100);
+      color: var(--g400);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 99px;
+      text-decoration: line-through
+    }
+
+    /* ── ENCABEZADO DETALLE CLIENTE ── */
+    .cl-hdr-card {
+      background: #fff;
+      border: 1px solid var(--g200);
+      border-radius: var(--rl);
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px
+    }
+
+    .cl-hdr-info {
+      flex: 1
+    }
+
+    .cl-hdr-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--g800);
+      margin-bottom: 2px
+    }
+
+    .cl-hdr-cuit {
+      font-size: 12px;
+      color: var(--g400);
+      font-family: monospace;
+      margin-bottom: 6px
+    }
+
+    .cl-hdr-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap
+    }
+
+    .cl-hdr-right {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px
+    }
+
+    /* ── CC STATS (detalle) ── */
+    .cc-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 14px
+    }
+
+    .cc-stat {
+      background: #fff;
+      border: 1px solid var(--g200);
+      border-radius: var(--rl);
+      padding: 12px 14px
+    }
+
+    .cc-stat-lbl {
+      font-size: 11px;
+      color: var(--g400);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      margin-bottom: 4px
+    }
+
+    .cc-stat-val {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--g800)
+    }
+
+    .cc-stat-val.red {
+      color: var(--red)
+    }
+
+    .cc-stat-val.green {
+      color: var(--green)
+    }
+
+    .cc-stat-val.amber {
+      color: var(--amber)
+    }
+
+    /* ── FAB ── */
+    .fab {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 52px;
+      height: 52px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(110, 89, 238, .4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 400;
+      transition: background .15s, transform .15s
+    }
+
+    .fab:hover {
+      background: #5a48d4;
+      transform: scale(1.07)
+    }
+
+    .fab-label {
+      position: fixed;
+      bottom: 36px;
+      right: 88px;
+      background: var(--g800);
+      color: #fff;
+      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: var(--r);
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .15s
+    }
+
+    .fab:hover~.fab-label {
+      opacity: 1
+    }
+
+    /* ── FILTER ROW ── */
+    .filter-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap
+    }
+
+    .filter-sel {
+      border: 1px solid var(--g200);
+      border-radius: var(--r);
+      padding: 7px 28px 7px 10px;
+      font-size: 12.5px;
+      font-family: var(--font);
+      color: var(--g600);
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%239494a8' d='M4 6l4 4 4-4'/%3E%3C/svg%3E") no-repeat right 6px center;
+      background-size: 14px;
+      appearance: none;
+      outline: none;
+      cursor: pointer
+    }
+
+    .filter-sel:focus {
+      border-color: var(--accent)
+    }
+
+    .filter-lbl {
+      font-size: 12px;
+      color: var(--g400);
+      white-space: nowrap
+    }
+
+    .filter-input {
+      border: 1px solid var(--g200);
+      border-radius: var(--r);
+      padding: 7px 10px;
+      font-size: 12.5px;
+      font-family: var(--font);
+      width: 130px;
+      outline: none
+    }
+
+    .filter-input:focus {
+      border-color: var(--accent)
+    }
+
+    /* ── SELECCIÓN FACTURACIÓN ── */
+    .sel-bar {
+      background: var(--accent-soft);
+      border: 1px solid rgba(110, 89, 238, .2);
+      border-radius: var(--rl);
+      padding: 10px 16px;
+      margin-bottom: 10px;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      animation: fi .15s ease
+    }
+
+    .sel-bar.on {
+      display: flex
+    }
+
+    .sel-bar-txt {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent)
+    }
+
+    .sel-bar-total {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--g800)
+    }
+
+    /* ── TABS ── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--g200);
+      margin-bottom: 20px;
+      overflow-x: auto
+    }
+
+    .tab {
+      padding: 11px 16px;
+      font-size: 11.5px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--g400);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      user-select: none;
+      transition: color .12s
+    }
+
+    .tab:hover {
+      color: var(--g600)
+    }
+
+    .tab.act {
+      color: var(--accent);
+      border-bottom-color: var(--accent)
+    }
+
+    .tb-body {
+      display: none
+    }
+
+    .tb-body.on {
+      display: block
+    }
+
+    /* ── EMPTY STATE ── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 24px;
+      text-align: center
+    }
+
+    .empty-state svg {
+      width: 40px;
+      height: 40px;
+      color: var(--g200);
+      margin-bottom: 12px
+    }
+
+    .empty-state-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--g600);
+      margin-bottom: 4px
+    }
+
+    .empty-state-sub {
+      font-size: 12px;
+      color: var(--g400)
+    }
+    .filt-btn {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 4px 8px;
+      border: 1.5px solid var(--g200);
+      border-radius: var(--r);
+      font-family: var(--font);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--g600);
+      background: #fff;
+      outline: none;
+      cursor: pointer;
+      height: 26px;
+      transition: border-color .12s, color .12s, background .12s;
+    }
+    .filt-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .filt-btn.act {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .fdd {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 100%;
+      background: #fff;
+      border: 1.5px solid var(--g200);
+      border-radius: var(--r);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+      z-index: 300;
+      min-width: 120px;
+      margin-top: 4px;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .fdd.on {
+      display: flex;
+    }
+    .fdd-lbl {
+      padding: 8px 12px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--g400);
+      border-bottom: 1px solid var(--g100);
+    }
+    .cal-day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11.5px;
+      color: var(--g800);
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: 600;
+      transition: background 0.1s, color 0.1s;
+    }
+    .cal-day-cell:hover:not(.empty) {
+      background: var(--g100);
+    }
+    .cal-day-cell.empty {
+      cursor: default;
+    }
+    .cal-day-cell.start-date, .cal-day-cell.end-date {
+      background: var(--accent) !important;
+      color: #fff !important;
+      border-radius: 4px;
+    }
+    .cal-day-cell.in-range {
+      background: var(--accent-soft) !important;
+      color: var(--accent) !important;
+      border-radius: 0;
+    }
+    .cal-day-cell.today {
+      border: 1.5px solid var(--accent);
+    }
+    .cal-nav-btn:hover {
+      background: var(--g100) !important;
+      border-radius: 4px;
+    }
+    .chq-sel-row {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border-bottom: 1px solid var(--g100);
+      transition: background .1s
+    }
+    .chq-sel-row:hover {
+      background: var(--g50)
+    }
+    .chq-sel-row:last-child {
+      border-bottom: none
+    }
+    .chq-sel-data {
+      flex: 1;
+      padding: 11px 14px 11px 0;
+      display: grid;
+      grid-template-columns: 1.3fr 1.2fr 0.9fr 0.9fr 0.9fr;
+      gap: 0;
+      align-items: center;
+      font-size: 13px
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════════════════════ -->
+  <nav class="sb">
+    <div class="sb-logo"><b>smart<span>fran</span></b><small>Cloud &middot; Admin</small></div>
+    <div style="padding:5px 0">
+
+      <div class="sbi" onclick="tog(this,'sub-tab')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+        </svg>
+        <span style="flex:1">Tableros</span><span class="arr">&#9660;</span>
+      </div>
+      <div class="sbi" onclick="tog(this,'sub-cat')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 6h16M4 10h16M4 14h10" />
+        </svg>
+        <span style="flex:1">Cat&aacute;logo</span><span class="arr">&#9660;</span>
+      </div>
+      <div class="sbi" onclick="tog(this,'sub-fq')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
+          <polyline points="9 22 9 12 15 12 15 22" />
+        </svg>
+        <span style="flex:1">Franquicias</span><span class="arr">&#9660;</span>
+      </div>
+
+      <div class="sdiv"></div>
+      <div class="sb-grp">Clientes Mayoristas</div>
+
+      <div class="sbi open" onclick="tog(this,'sub-cl')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M23 21v-2a4 4 0 00-3-3.87" />
+          <path d="M16 3.13a4 4 0 010 7.75" />
+        </svg>
+        <span style="flex:1">Clientes</span><span class="arr">&#9650;</span>
+      </div>
+      <div class="sub on" id="sub-cl">
+        <div class="sbi" id="sb-cl" onclick="go('cl')">Gesti&oacute;n de clientes</div>
+      </div>
+
+      <div class="sbi open" onclick="tog(this,'sub-cc')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="4" width="20" height="16" rx="2" />
+          <line x1="12" y1="4" x2="12" y2="20" />
+          <line x1="2" y1="12" x2="22" y2="12" />
+        </svg>
+        <span style="flex:1">Cuenta Corriente</span><span class="arr">&#9650;</span>
+      </div>
+      <div class="sub on" id="sub-cc">
+        <div class="sbi act" id="sb-cc-res" onclick="go('cc-resumen')">Resumen de cuentas</div>
+        <!-- <div class="sbi" id="sb-cc-fac" onclick="go('cc-facturacion')">Facturaci&oacute;n agrupada</div> -->
+      </div>
+
+      <div class="sdiv"></div>
+      <div class="sb-grp">Tesorer&iacute;a</div>
+
+      <div class="sbi open" onclick="tog(this,'sub-chq')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="5" width="20" height="14" rx="2" />
+          <line x1="2" y1="10" x2="22" y2="10" />
+          <line x1="6" y1="15" x2="10" y2="15" />
+        </svg>
+        <span style="flex:1">Cheques</span><span class="arr">&#9650;</span>
+      </div>
+      <div class="sub on" id="sub-chq">
+        <div class="sbi" id="sb-chq-informe" onclick="go('cheques-informe')">Informe de cheques de terceros</div>
+        <div class="sbi" id="sb-chq-salida" onclick="go('cheques-salida')">Salida de cheques</div>
+        <div class="sbi" id="sb-chq-devolucion" onclick="go('cheques-devolucion')">Devoluci&oacute;n (rechazados)</div>
+      </div>
+
+      <div class="sdiv"></div>
+      <div class="sbi open" onclick="tog(this,'sub-may')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3" />
+          <path
+            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+        </svg>
+        <span style="flex:1">Canal Mayorista</span><span class="arr">&#9650;</span>
+      </div>
+      <div class="sub on" id="sub-may">
+        <div class="sbi" onclick="">Zonas log&iacute;sticas</div>
+        <div class="sbi" onclick="">Vendedores</div>
+        <div class="sbi" onclick="">Equipamiento</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ TOPBAR ══ -->
+  <div class="tb">
+    <div class="tb-info">
+      <div>Juan Pérez — Franquiciado</div>
+      <div style="font-size:10px;opacity:.5">Franquicia Córdoba Centro</div>
+    </div>
+    <div class="tb-av">JP</div>
+  </div>
+
+  <div class="main">
+
+    <!-- ══════════════════════════════════════════════════════════════════
+     PANTALLA 1: RESUMEN DE CUENTAS (CC-09 + listado)
+════════════════════════════════════════════════════════════════════ -->
+    <div class="pg on" id="pg-cc-resumen">
+      <div class="ptitle">Cuenta Corriente</div>
+      <div class="psub">Resumen de la situación crediticia de todos tus clientes con crédito habilitado.</div>
+
+      <!-- KPIs -->
+      <div class="kpi-row" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="kpi">
+          <div class="kpi-lbl">Total en cuenta corriente</div>
+          <div class="kpi-val">$2.168.300</div>
+          <div class="kpi-sub">Total consignado en CC</div>
+        </div>
+        <div class="kpi red">
+          <div class="kpi-lbl">Total adeudado</div>
+          <div class="kpi-val">$1.248.300</div>
+          <div class="kpi-sub">Saldo pendiente total</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-lbl">Total recaudado</div>
+          <div class="kpi-val">$920.000</div>
+          <div class="kpi-sub">Cobros registrados del período</div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="tbar">
+        <div class="srch"><span class="srch-i">🔍</span><input type="text" placeholder="Buscar por nombre o CUIT…" />
+        </div>
+        <div class="filter-row" style="margin:0;gap:8px">
+          <select class="filter-sel">
+            <option selected>Todos los estados</option>
+            <option>Con deuda</option>
+            <option>Al día</option>
+          </select>
+          <select class="filter-sel">
+            <option>Todos los vendedores</option>
+            <option>Carlos Gómez</option>
+            <option>Ana López</option>
+          </select>
+          <select class="filter-sel">
+            <option>Todas las zonas</option>
+            <option>Zona Centro</option>
+            <option>Zona Norte</option>
+            <option>Zona Sur</option>
+            <option>Zona Este</option>
+            <option>Zona Oeste</option>
+          </select>
+        </div>
+        <button class="btn bo" onclick="go('cc-resumen')" style="margin-left:auto">↻ Actualizar</button>
+        <button class="btn bo">⬇ Exportar</button>
+      </div>
+
+      <div class="pag">
+        <div class="pag-l">Por página <select class="pag-sel">
+            <option>50</option>
+          </select> <span>Mostrando 1–6 de 11 clientes</span></div>
+        <div class="pag-btns"><button class="pb">|◀</button><button class="pb">◀</button><button
+            class="pb">▶</button><button class="pb">▶|</button></div>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:32px"></th>
+              <th class="sort sort-act">Cliente ↑</th>
+              <th class="sort">Límite CC</th>
+              <th class="sort">Saldo pendiente</th>
+              <th class="sort">Disponible</th>
+              <th class="sort">Último cobro</th>
+              <th>Últ. movimiento</th>
+              <th style="width:130px">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Fila 1: deuda vencida -->
+            <tr>
+              <td>
+                <div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                    <path d="M16 3.13a4 4 0 010 7.75" />
+                  </svg></div>
+              </td>
+              <td>
+                <div style="font-weight:600">Distribuidora El Sol</div>
+                <div style="font-size:11px;color:var(--g400)">20-12345678-9</div>
+              </td>
+              <td style="font-family:monospace;font-size:12px">$500.000</td>
+              <td><span class="bdg bdg-r">$230.000</span></td>
+              <td style="font-family:monospace;font-size:12px;color:var(--green)">$270.000</td>
+              <td>03/06/2026</td>
+              <td style="font-size:12px;color:var(--g400)">05/06/2026</td>
+              <td>
+                <div style="display:flex;gap:5px">
+                  <button class="btn bo bsm" onclick="verDetalle('Distribuidora El Sol')">Ver detalle</button>
+                  <button class="btn bsm"
+                    style="background:var(--green-s);color:var(--green);border:1px solid rgba(29,158,117,.2)"
+                    onclick="openCobro('Distribuidora El Sol')">+ Cobro</button>
+                </div>
+              </td>
+            </tr>
+            <!-- Fila 2 -->
+            <tr>
+              <td>
+                <div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                    <path d="M16 3.13a4 4 0 010 7.75" />
+                  </svg></div>
+              </td>
+              <td>
+                <div style="font-weight:600">Heladería Palermo</div>
+                <div style="font-size:11px;color:var(--g400)">27-28901234-5</div>
+              </td>
+              <td style="font-family:monospace;font-size:12px">$300.000</td>
+              <td><span class="bdg bdg-r">$185.000</span></td>
+              <td style="font-family:monospace;font-size:12px;color:var(--green)">$115.000</td>
+              <td>30/05/2026</td>
+              <td style="font-size:12px;color:var(--g400)">03/06/2026</td>
+              <td>
+                <div style="display:flex;gap:5px">
+                  <button class="btn bo bsm" onclick="verDetalle('Heladería Palermo')">Ver detalle</button>
+                  <button class="btn bsm"
+                    style="background:var(--green-s);color:var(--green);border:1px solid rgba(29,158,117,.2)"
+                    onclick="openCobro('Heladería Palermo')">+ Cobro</button>
+                </div>
+              </td>
+            </tr>
+            <!-- Fila 3: al límite -->
+            <tr>
+              <td>
+                <div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                    <path d="M16 3.13a4 4 0 010 7.75" />
+                  </svg></div>
+              </td>
+              <td>
+                <div style="font-weight:600">Almacén Don Pedro</div>
+                <div style="font-size:11px;color:var(--g400)">20-55443322-1</div>
+              </td>
+              <td style="font-family:monospace;font-size:12px">$150.000</td>
+              <td><span class="bdg bdg-r">$148.500</span></td>
+              <td style="font-family:monospace;font-size:12px;color:var(--amber)">$1.500</td>
+              <td style="color:var(--g400);font-size:12px">—</td>
+              <td style="font-size:12px;color:var(--g400)">02/06/2026</td>
+              <td>
+                <div style="display:flex;gap:5px">
+                  <button class="btn bo bsm" onclick="verDetalle('Almacén Don Pedro')">Ver detalle</button>
+                  <button class="btn bsm"
+                    style="background:var(--green-s);color:var(--green);border:1px solid rgba(29,158,117,.2)"
+                    onclick="openCobro('Almacén Don Pedro')">+ Cobro</button>
+                </div>
+              </td>
+            </tr>
+            <!-- Fila 4: al día -->
+            <tr>
+              <td>
+                <div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                    <path d="M16 3.13a4 4 0 010 7.75" />
+                  </svg></div>
+              </td>
+              <td>
+                <div style="font-weight:600">Kiosco Central</div>
+                <div style="font-size:11px;color:var(--g400)">27-87654321-5</div>
+              </td>
+              <td style="font-family:monospace;font-size:12px">$150.000</td>
+              <td><span class="bdg bdg-g">$0</span></td>
+              <td style="font-family:monospace;font-size:12px;color:var(--green)">$150.000</td>
+              <td>25/05/2026</td>
+              <td style="font-size:12px;color:var(--g400)">28/05/2026</td>
+              <td>
+                <div style="display:flex;gap:5px">
+                  <button class="btn bo bsm" onclick="verDetalle('Kiosco Central')">Ver detalle</button>
+                  <button class="btn bsm"
+                    style="background:var(--green-s);color:var(--green);border:1px solid rgba(29,158,117,.2)"
+                    onclick="openCobro('Kiosco Central')">+ Cobro</button>
+                </div>
+              </td>
+            </tr>
+            <!-- Fila 5 -->
+            <tr>
+              <td>
+                <div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                    <path d="M16 3.13a4 4 0 010 7.75" />
+                  </svg></div>
+              </td>
+              <td>
+                <div style="font-weight:600">Snacks & Co.</div>
+                <div style="font-size:11px;color:var(--g400)">30-99887766-2</div>
+              </td>
+              <td style="font-family:monospace;font-size:12px">$200.000</td>
+              <td><span class="bdg bdg-r">$92.400</span></td>
+              <td style="font-family:monospace;font-size:12px;color:var(--green)">$107.600</td>
+              <td style="color:var(--g400);font-size:12px">—</td>
+              <td style="font-size:12px;color:var(--g400)">04/06/2026</td>
+              <td>
+                <div style="display:flex;gap:5px">
+                  <button class="btn bo bsm" onclick="verDetalle('Snacks & Co.')">Ver detalle</button>
+                  <button class="btn bsm"
+                    style="background:var(--green-s);color:var(--green);border:1px solid rgba(29,158,117,.2)"
+                    onclick="openCobro('Snacks & Co.')">+ Cobro</button>
+                </div>
+              </td>
+            </tr>
+            <!-- Fila 6: deuda vencida grave -->
+            <tr>
+              <td>
+                <div class="ci"><svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 00-3-3.87" />
+                    <path d="M16 3.13a4 4 0 010 7.75" />
+                  </svg></div>
+              </td>
+              <td>
+                <div style="font-weight:600">Supermercado Norte</div>
+                <div style="font-size:11px;color:var(--g400)">30-11223344-8</div>
+              </td>
+              <td style="font-family:monospace;font-size:12px">$600.000</td>
+              <td><span class="bdg bdg-r">$592.400</span></td>
+              <td style="font-family:monospace;font-size:12px;color:var(--red)">-$92.400</td>
+              <td>18/05/2026</td>
+              <td style="font-size:12px;color:var(--g400)">01/05/2026</td>
+              <td>
+                <div style="display:flex;gap:5px">
+                  <button class="btn bo bsm" onclick="verDetalle('Supermercado Norte')">Ver detalle</button>
+                  <button class="btn bsm"
+                    style="background:var(--green-s);color:var(--green);border:1px solid rgba(29,158,117,.2)"
+                    onclick="openCobro('Supermercado Norte')">+ Cobro</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+     PANTALLA 2: DETALLE DE CUENTA CORRIENTE DE UN CLIENTE
+════════════════════════════════════════════════════════════════════ -->
+    <div class="pg" id="pg-cc-detalle">
+      <div class="back" onclick="go('cc-resumen')">← Volver a Resumen de Cuentas</div>
+
+      <!-- Resumen del Cliente en una sola línea con Badges -->
+      <div class="cl-hdr-card" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; padding:12px 20px;">
+        <!-- Info del cliente + Badges -->
+        <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+          <div>
+            <strong id="cl-det-name" style="font-size:16px; color:var(--g800);">Distribuidora El Sol</strong>
+            <span id="cl-det-cuit" style="font-size:12px; color:var(--g400); font-family:monospace; margin-left:8px;">CUIT: 20-12345678-9</span>
+          </div>
+          <!-- Separador vertical sutil -->
+          <div style="height:16px; width:1px; background:var(--g200); margin:0 4px;"></div>
+          <!-- Badges -->
+          <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            <span class="bdg bdg-p" style="font-size:12px; padding:4px 10px;">
+              Límite de crédito: <strong id="cl-det-limite" style="font-family:monospace; margin-left:2px;">$500.000</strong>
+            </span>
+            <span class="bdg bdg-r" style="font-size:12px; padding:4px 10px; background:var(--red-s); color:var(--red); border:1px solid rgba(226,75,74,.2);">
+              Saldo pendiente: <strong id="cl-det-pendiente" style="font-family:monospace; margin-left:2px;">$230.000</strong>
+            </span>
+            <span id="cl-det-disponible-badge" class="bdg bdg-g" style="font-size:12px; padding:4px 10px; background:var(--green-s); color:var(--green); border:1px solid rgba(29,158,117,.2);">
+              Saldo disponible: <strong id="cl-det-disponible" style="font-family:monospace; margin-left:2px;">$270.000</strong>
+            </span>
+          </div>
+        </div>
+        <!-- Acciones -->
+        <button class="btn bo bsm" onclick="go('cl')">Ver ficha del cliente</button>
+        
+        <!-- Alerta de Saldo Real a Hoy -->
+        <div id="cl-det-warning-periodo" style="display:none; width:100%; margin-top:10px; font-size:12.5px; color:#7a4d0a; background:var(--amber-s); border:1px solid rgba(186,117,23,.2); border-radius:var(--r); padding:8px 12px; align-items:center; gap:6px;">
+          <span>⚠️ <strong>Saldo actual a hoy:</strong> El saldo real de la cuenta corriente es <strong id="cl-det-real-hoy-val" style="font-family:monospace;">$230.000</strong>. Este saldo a hoy puede incluir movimientos posteriores al período consultado.</span>
+        </div>
+      </div>
+
+      <!-- Toolbar del libro mayor -->
+      <div class="tbar">
+        <div class="filter-row" style="margin:0;flex:1;gap:8px; align-items:center;">
+          <span class="filter-lbl">Período:</span>
+          <div style="position: relative; display: inline-block;">
+            <button id="fecha-filter-btn" class="filt-btn" onclick="togFD('fecha-filter-dropdown', 'fecha-filter-btn'); event.stopPropagation();"
+              style="padding: 4px 8px; border: 1.5px solid var(--g200); border-radius: var(--r); font-family: var(--font); font-size: 11.5px; font-weight: 600; color: var(--g600); background: #fff; outline: none; cursor: pointer; height: 26px; display: inline-flex; align-items: center; gap: 4px; transition: border-color .15s, background-color .15s;">
+              📅 Fecha ▾
+            </button>
+            <div id="fecha-filter-dropdown" class="fdd" style="min-width: 250px; padding: 12px; gap: 8px; position: absolute; left: 0; top: 100%; z-index: 100;">
+              <div class="fdd-lbl" style="margin-bottom:6px;">Filtrar por Fecha</div>
+              
+              <div class="calendar-widget" style="width: 100%;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 0 4px;">
+                  <button type="button" class="cal-nav-btn" onclick="changeCalMonth(-1, true, event)" style="background: none; border: none; font-size: 14px; cursor: pointer; color: var(--g600); font-weight: bold; padding: 4px 8px;">&lt;</button>
+                  <span class="cal-month-title" style="font-size: 12.5px; font-weight: 700; color: var(--g800);"></span>
+                  <button type="button" class="cal-nav-btn" onclick="changeCalMonth(1, true, event)" style="background: none; border: none; font-size: 14px; cursor: pointer; color: var(--g600); font-weight: bold; padding: 4px 8px;">&gt;</button>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 10px; font-weight: 700; color: var(--g400); margin-bottom: 6px;">
+                  <span>Do</span><span>Lu</span><span>Ma</span><span>Mi</span><span>Ju</span><span>Vi</span><span>Sá</span>
+                </div>
+                <div class="cal-days-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); row-gap: 4px; column-gap: 2px;"></div>
+                <div style="margin-top: 10px; border-top: 1px solid var(--g200); padding-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+                  <div style="font-size: 11px; color: var(--g700); text-align: center; font-weight: 600;" class="cal-range-text">Seleccione rango</div>
+                  <div style="display: flex; gap: 6px;">
+                    <button type="button" onclick="clearCalRangeMon(event)" style="flex: 1; padding: 4px 8px; font-size: 11px; background: var(--g100); color: var(--g700); border: none; border-radius: var(--r); cursor: pointer; font-weight: 600;">Limpiar</button>
+                    <button type="button" onclick="applyCalRangeMon(event)" style="padding: 4px 10px; font-size: 11px; background: var(--accent); color: #fff; border: none; border-radius: var(--r); cursor: pointer; font-weight: 600;">Aplicar</button>
+                  </div>
+                </div>
+              </div>
+              
+              <input type="hidden" id="filter-desde">
+              <input type="hidden" id="filter-hasta">
+            </div>
+          </div>
+          <select id="filter-tipo" onchange="renderLibroMayor(true)" class="filter-sel">
+            <option>Todos los movimientos</option>
+            <option>Facturas</option>
+            <option>Recibos</option>
+            <option>Notas de Crédito (NC)</option>
+            <option>Notas de Débito (ND)</option>
+          </select>
+        </div>
+        <button class="btn bo">⬇ Exportar</button>
+        <button class="btn bgreen" onclick="openCobro(currentClient)">+ Nueva cobranza</button>
+      </div>
+
+      <!-- Paginado del Libro Mayor -->
+      <div class="pag" id="lm-pag" style="margin-bottom: 8px;">
+        <div class="pag-l">
+          Por página 
+          <select class="pag-sel" id="lm-pag-size" onchange="changeLmPageSize(this.value)">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select> 
+          <span id="lm-pag-info">Mostrando 1–10 de 22 movimientos</span>
+        </div>
+        <div class="pag-btns">
+          <button class="pb" id="lm-btn-first" onclick="lmGoToPage('first')">|◀</button>
+          <button class="pb" id="lm-btn-prev" onclick="lmGoToPage('prev')">◀</button>
+          <button class="pb" id="lm-btn-next" onclick="lmGoToPage('next')">▶</button>
+          <button class="pb" id="lm-btn-last" onclick="lmGoToPage('last')">▶|</button>
+        </div>
+      </div>
+
+      <!-- Tabla libro mayor -->
+      <div class="card">
+        <table>
+          <thead>
+            <tr id="lm-thead-tr">
+              <th>Fecha</th>
+              <th>Concepto / Documento</th>
+              <th style="text-align:right">Debe</th>
+              <th style="text-align:right">Haber</th>
+              <th style="text-align:right">Saldo</th>
+              <th style="width:36px"></th>
+            </tr>
+          </thead>
+          <tbody id="lm-tbody">
+            <!-- Rellenado dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Nota saldo -->
+      <div class="ai" style="margin-top:-6px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        El saldo se calcula de forma acumulada. Cada movimiento suma o resta al saldo anterior. Los registros anulados
+        quedan en el historial pero no afectan el saldo vigente.
+      </div>
+
+
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+     NUEVA SOLAPA: CHEQUES
+     PANTALLA 1: INFORME DE CHEQUES DE TERCEROS
+════════════════════════════════════════════════════════════════════ -->
+    <div class="pg" id="pg-cheques-informe">
+      <div class="ptitle">Informe de Cheques de Terceros</div>
+      <div class="psub">Panel de consulta financiera de la cartera de cheques, independiente de las cuentas corrientes. Forma parte de la caja / tesorería.</div>
+
+      <!-- KPIs -->
+      <div class="kpi-row" style="grid-template-columns: repeat(4, 1fr);">
+        <div class="kpi">
+          <div class="kpi-lbl">En cartera</div>
+          <div class="kpi-val" id="chq-kpi-cartera">$0</div>
+          <div class="kpi-sub" id="chq-kpi-cartera-sub">0 cheques</div>
+        </div>
+        <div class="kpi" style="color:var(--blue)">
+          <div class="kpi-lbl">Depositados</div>
+          <div class="kpi-val" id="chq-kpi-depositado" style="color:var(--blue)">$0</div>
+          <div class="kpi-sub" id="chq-kpi-depositado-sub">0 cheques</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-lbl">Canjeados / Entregados</div>
+          <div class="kpi-val" id="chq-kpi-salida">$0</div>
+          <div class="kpi-sub" id="chq-kpi-salida-sub">0 cheques</div>
+        </div>
+        <div class="kpi red">
+          <div class="kpi-lbl">Rechazados</div>
+          <div class="kpi-val" id="chq-kpi-rechazado">$0</div>
+          <div class="kpi-sub" id="chq-kpi-rechazado-sub">0 cheques</div>
+        </div>
+      </div>
+
+      <!-- Toolbar -->
+      <div class="tbar">
+        <div class="srch"><span class="srch-i">🔍</span><input type="text" id="chq-search" oninput="renderChequesInforme()" placeholder="Buscar por N° de cheque, librador o banco…" />
+        </div>
+        <div class="filter-row" style="margin:0;gap:8px">
+          <select class="filter-sel" id="chq-filter-estado" onchange="renderChequesInforme()">
+            <option value="Todos" selected>Todos los estados</option>
+            <option value="En cartera">En cartera</option>
+            <option value="Depositado">Depositado</option>
+            <option value="Canjeado">Canjeado</option>
+            <option value="Entregado a terceros">Entregado a terceros</option>
+            <option value="Rechazado">Rechazado</option>
+          </select>
+        </div>
+        <button class="btn bo" onclick="document.getElementById('chq-search').value='';document.getElementById('chq-filter-estado').value='Todos';renderChequesInforme()" style="margin-left:auto">↻ Limpiar filtros</button>
+        <button class="btn bo">⬇ Exportar</button>
+        <button class="btn bp" onclick="go('cheques-salida')">↗ Registrar salida de cheques</button>
+      </div>
+
+      <div class="pag">
+        <div class="pag-l">Por página <select class="pag-sel">
+            <option>50</option>
+          </select> <span id="chq-pag-info">Mostrando 0 de 0 cheques</span></div>
+        <div class="pag-btns"><button class="pb">|◀</button><button class="pb">◀</button><button
+            class="pb">▶</button><button class="pb">▶|</button></div>
+      </div>
+
+      <div class="card">
+        <table>
+          <thead>
+            <tr>
+              <th>N° Cheque</th>
+              <th>Banco emisor</th>
+              <th>Librador / Titular</th>
+              <th>Cliente (CC)</th>
+              <th>F. emisión</th>
+              <th>F. vencimiento</th>
+              <th style="text-align:right">Monto</th>
+              <th>Ubicación</th>
+              <th>Estado</th>
+              <th style="width:160px">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="chq-tbody">
+            <!-- Rellenado dinámicamente -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ai" style="margin-top:-6px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="8" x2="12" y2="12" />
+          <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+        Usá el buscador para localizar rápidamente un cheque puntual por su número — útil en caso de rebotes o reclamos.
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+     NUEVA SOLAPA: CHEQUES
+     PANTALLA 2: SALIDA DE CHEQUES
+════════════════════════════════════════════════════════════════════ -->
+    <div class="pg" id="pg-cheques-salida">
+      <div class="back" onclick="go('cheques-informe')">← Volver al Informe de Cheques</div>
+      <div class="ptitle">Salida de Cheques</div>
+      <div class="psub">Registrá la salida de cheques de la cartera activa: depósito bancario, canje o entrega a terceros.</div>
+
+      <div class="fst" style="margin-top:4px">Seleccionar cheques en cartera</div>
+      <div class="card" style="margin-top:8px">
+        <div
+          style="display:flex;background:var(--g50);border-bottom:1px solid var(--g200);font-size:11px;font-weight:700;color:var(--g600);text-transform:uppercase;letter-spacing:.03em">
+          <div style="padding:10px 8px 10px 14px;width:44px"><input type="checkbox" id="chq-sal-chk-all"
+              onclick="toggleAllSalida(this)" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer" />
+          </div>
+          <div style="flex:1;padding:10px 14px 10px 0;display:grid;grid-template-columns:1.3fr 1.2fr 0.9fr 0.9fr 0.9fr;gap:0">
+            <span>N° Cheque / Banco</span>
+            <span>Librador</span>
+            <span>Vencimiento</span>
+            <span>Días p/ vto.</span>
+            <span style="text-align:right">Importe</span>
+          </div>
+        </div>
+        <div id="chq-sal-list">
+          <!-- Rellenado dinámicamente -->
+        </div>
+      </div>
+
+      <div class="sel-bar" id="chq-sel-bar">
+        <div>
+          <span class="sel-bar-txt" id="chq-sel-count">0 cheques seleccionados</span>
+        </div>
+        <span class="sel-bar-total" id="chq-sel-total">Total: $0</span>
+      </div>
+
+      <div class="fc">
+        <div class="fst">Destino de la salida</div>
+        <div class="tabs" style="margin-bottom:16px">
+          <div class="tab act" id="chq-tab-deposito" onclick="switchChqDestino('deposito')">Depósito bancario</div>
+          <div class="tab" id="chq-tab-canje" onclick="switchChqDestino('canje')">Canje de cheque</div>
+          <div class="tab" id="chq-tab-terceros" onclick="switchChqDestino('terceros')">Entrega a terceros (pago a proveedores)</div>
+        </div>
+
+        <!-- DESTINO: DEPÓSITO BANCARIO -->
+        <div class="tb-body on" id="chq-tb-deposito">
+          <div class="fg2">
+            <div class="fld">
+              <div class="fld-wrap hv">
+                <label>Cuenta bancaria destino</label>
+                <select id="chq-dep-cuenta">
+                  <option>Banco Nación — Cta. Cte. N° 182-391/0</option>
+                  <option>Banco Galicia — Cta. Cte. N° 401-992/3</option>
+                  <option>Banco Santander — Cta. Cte. N° 088-112/5</option>
+                  <option>Banco BBVA — Cta. Cte. N° 201-554/8</option>
+                  <option>Banco Macro — Cta. Cte. N° 330-771/2</option>
+                </select>
+              </div>
+              <span class="farr" style="top:29px">▼</span>
+            </div>
+            <div class="fld">
+              <div class="fld-wrap hv"><label>Fecha de depósito</label><input type="date" id="chq-dep-fecha" /></div>
+            </div>
+          </div>
+          <div class="ai">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            El cheque sale de cartera y el dinero se acredita en la cuenta bancaria seleccionada. Si el banco rechaza el cheque, deberás registrarlo desde «Devolución (rechazados)».
+          </div>
+        </div>
+
+        <!-- DESTINO: CANJE -->
+        <div class="tb-body" id="chq-tb-canje">
+          <div class="fg2">
+            <div class="fld">
+              <div class="fld-wrap hv">
+                <label>Depósito de efectivo destino</label>
+                <select id="chq-canje-caja">
+                  <option>Caja Principal POS</option>
+                  <option>Caja Chica Recaudación</option>
+                  <option>Caja Tesorería Central</option>
+                  <option>Caja Valores a Depositar</option>
+                </select>
+              </div>
+              <span class="farr" style="top:29px">▼</span>
+            </div>
+            <div class="fld">
+              <div class="fld-wrap hv"><label>Fecha del canje</label><input type="date" id="chq-canje-fecha" /></div>
+            </div>
+          </div>
+          <div class="fld" style="margin-bottom:14px">
+            <div class="fld-wrap"><label>Gasto administrativo / comisión de canje</label><input type="text" id="chq-canje-gasto" placeholder="$ 0,00" oninput="updateChqSalidaResumen()" /></div>
+            <div class="fld-hint">Aplicá una comisión cuando falten días para el vencimiento del cheque. Podés dejarlo en $0.</div>
+          </div>
+          <div class="ai aw">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            El cheque se intercambia por efectivo, que ingresa al depósito de dinero físico seleccionado. El gasto administrativo se descuenta del neto acreditado.
+          </div>
+        </div>
+
+        <!-- DESTINO: ENTREGA A TERCEROS -->
+        <div class="tb-body" id="chq-tb-terceros">
+          <div class="fg2">
+            <div class="fld">
+              <div class="fld-wrap hv">
+                <label>Proveedor / Beneficiario</label>
+                <select id="chq-terc-proveedor">
+                  <option>Molinos del Sur S.A.</option>
+                  <option>Agroindustrias S.A.</option>
+                  <option>Distribuidora Norte SA</option>
+                  <option>Comercial del Norte SRL</option>
+                  <option>Otro proveedor…</option>
+                </select>
+              </div>
+              <span class="farr" style="top:29px">▼</span>
+            </div>
+            <div class="fld">
+              <div class="fld-wrap hv"><label>Fecha de entrega</label><input type="date" id="chq-terc-fecha" /></div>
+            </div>
+          </div>
+          <div class="fld" style="margin-bottom:14px">
+            <div class="fld-wrap hv">
+              <label>Concepto de gasto / imputación</label>
+              <select id="chq-terc-concepto">
+                <option>Pago a proveedores — Mercadería</option>
+                <option>Pago a proveedores — Servicios</option>
+                <option>Pago a proveedores — Logística</option>
+                <option>Otros gastos operativos</option>
+              </select>
+            </div>
+            <span class="farr" style="top:29px">▼</span>
+          </div>
+          <div class="ai">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            Podés seleccionar uno o varios cheques de la cartera para imputarlos directamente contra este pago a proveedores.
+          </div>
+        </div>
+
+        <div class="ff">
+          <button class="btn bo" onclick="go('cheques-informe')">Cancelar</button>
+          <button class="btn bp" onclick="confirmarSalidaCheques()">Confirmar salida</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+     NUEVA SOLAPA: CHEQUES
+     PANTALLA 3: DEVOLUCIÓN DE CHEQUE (RECHAZADO)
+════════════════════════════════════════════════════════════════════ -->
+    <div class="pg" id="pg-cheques-devolucion">
+      <div class="back" onclick="go('cheques-informe')">← Volver al Informe de Cheques</div>
+      <div class="ptitle">Devolución de Cheque (Cheque Rechazado)</div>
+      <div class="psub">Registrá el rechazo de un cheque depositado por falta de fondos. Se generará un contramovimiento en la cuenta corriente del cliente emisor.</div>
+
+      <div class="fc">
+        <div class="fst">Cheque depositado a devolver</div>
+        <div class="fld" style="margin-bottom:0">
+          <div class="fld-wrap hv">
+            <label>Seleccionar cheque</label>
+            <select id="chq-dev-select" onchange="onChqDevSelect()">
+              <!-- Rellenado dinámicamente -->
+            </select>
+          </div>
+          <span class="farr" style="top:29px">▼</span>
+          <div class="fld-hint">Solo se listan cheques con estado «Depositado», elegibles para rechazo.</div>
+        </div>
+
+        <div id="chq-dev-resumen" style="display:none; margin-top:16px; background:var(--g50); border:1px solid var(--g200); border-radius:var(--r); padding:14px 16px;">
+          <!-- Rellenado dinámicamente -->
+        </div>
+      </div>
+
+      <div class="fc" id="chq-dev-datos" style="display:none">
+        <div class="fst">Datos de la devolución</div>
+        <div class="fg2">
+          <div class="fld">
+            <div class="fld-wrap hv"><label>Fecha de rechazo</label><input type="date" id="chq-dev-fecha" /></div>
+          </div>
+          <div class="fld">
+            <div class="fld-wrap hv">
+              <label>Motivo de rechazo</label>
+              <select id="chq-dev-motivo">
+                <option>Falta de fondos</option>
+                <option>Cuenta cerrada</option>
+                <option>Firma disconforme</option>
+                <option>Orden de no pago</option>
+                <option>Otro</option>
+              </select>
+            </div>
+            <span class="farr" style="top:29px">▼</span>
+          </div>
+        </div>
+        <div class="fld" style="margin-bottom:14px">
+          <div class="fld-wrap"><label>Observaciones</label><input type="text" id="chq-dev-obs" placeholder="Ej: cliente notificado, se acuerda nuevo cheque…" /></div>
+        </div>
+        <div class="fld" style="margin-bottom:14px">
+          <div class="fld-wrap"><label>Gasto administrativo / comisión por devolución</label><input type="text" id="chq-dev-gasto" placeholder="$ 0,00" oninput="updateChqDevResumen()" /></div>
+          <div class="fld-hint">Puede ser $0 o el monto que se defina por la gestión del rebote.</div>
+        </div>
+
+        <div class="ai ar" id="chq-dev-alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+            <line x1="12" y1="9" x2="12" y2="13" />
+            <line x1="12" y1="17" x2="12.01" y2="17" />
+          </svg>
+          <span id="chq-dev-alert-txt">Se generará una Nota de Débito en la cuenta corriente del cliente, restituyendo la deuda originalmente cancelada por este cheque.</span>
+        </div>
+
+        <div class="ff">
+          <button class="btn bo" onclick="go('cheques-informe')">Cancelar</button>
+          <button class="btn bgreen" style="background:var(--red)" onclick="confirmarDevolucionCheque()">Confirmar devolución</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+     MODAL: VER DETALLE DE CHEQUE
+════════════════════════════════════════════════════════════════════ -->
+    <div class="mo-overlay" id="mo-cheque-detalle" onclick="closeChqDetalleOutside(event)">
+      <div style="background:#fff; border-radius:var(--rl); width:560px; max-height:88vh; box-shadow:0 8px 40px rgba(15,0,53,.22); animation:moIn .16s ease; display:flex; flex-direction:column; overflow:hidden;">
+        <div class="panel-hdr" style="background:var(--navy); color:#fff; padding:16px 20px;">
+          <div>
+            <div class="panel-title" style="color:#fff; font-size:16px;" id="chq-detalle-title">Detalle de Cheque</div>
+            <div style="font-size:12px; color:rgba(255,255,255,.7); margin-top:2px;">Ficha completa del cheque</div>
+          </div>
+          <button class="panel-close" style="color:#fff;" onclick="closeChqDetalleModal()">✕</button>
+        </div>
+        <div class="panel-body" style="padding:20px; overflow-y:auto;" id="chq-detalle-body">
+          <!-- Rellenado dinámicamente -->
+        </div>
+        <div class="panel-foot" style="padding:14px 20px; border-top:1px solid var(--g100); display:flex; justify-content:flex-end; background:var(--g50);">
+          <button class="btn bp" onclick="closeChqDetalleModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+     PANTALLA 3 (original): FACTURACIÓN AGRUPADA (GSFC-481) — desactivada
+════════════════════════════════════════════════════════════════════ -->
+    <!--
+    <div class="pg" id="pg-cc-facturacion">
+      ... (contenido original sin cambios, oculto) ...
+    </div>
+    -->
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+     PANEL LATERAL: REGISTRAR COBRO
+════════════════════════════════════════════════════════════════════ -->
+    <div class="mo-overlay" id="panel-cobro" onclick="closePanelOutside(event)">
+      <div style="background:#fff; border-radius:var(--rl); width:620px; max-height:92vh; box-shadow:0 8px 40px rgba(15,0,53,.22); animation:moIn .16s ease; display:flex; flex-direction:column; overflow:hidden;">
+        <div class="panel-hdr">
+          <div>
+            <div class="panel-title">Registrar Cobro</div>
+            <div style="font-size:12px;color:var(--g400);margin-top:2px" id="panel-cobro-cliente">Cliente: Distribuidora
+              El Sol</div>
+          </div>
+          <button class="panel-close" onclick="closeCobro()">✕</button>
+        </div>
+        <div class="panel-body" style="overflow-y:auto;">
+          <div class="fst">Datos del pago</div>
+
+          <div class="fld" style="margin-bottom:14px">
+            <div class="fld-wrap hv"><label>Fecha</label><input type="date" id="cobro-fecha" value="2026-06-10" /></div>
+          </div>
+
+          <div class="fst" style="margin-top:20px; margin-bottom:8px">Formas de pago</div>
+          <div id="payment-methods-list" style="display:flex; flex-direction:column; gap:10px; margin-bottom:14px">
+            <!-- Se rellena dinámicamente -->
+          </div>
+
+          <button type="button" class="btn bo bsm" onclick="addPaymentRow()"
+            style="width:100%; border:1.5px dashed var(--accent); color:var(--accent); font-weight:600; justify-content:center; margin-bottom:14px">+
+            Agregar forma de pago</button>
+
+          <div
+            style="background:var(--g50); border:1px solid var(--g200); border-radius:var(--r); padding:10px 12px; margin-bottom:14px; display:flex; justify-content:space-between; font-size:13px; font-weight:700">
+            <span>Total registrado:</span>
+            <span id="payment-total-sum" style="color:var(--green)">$0,00</span>
+          </div>
+
+          <div class="fld" style="margin-bottom:14px">
+            <div class="fld-wrap"><label>Observación (opcional)</label><input type="text" id="cobro-obs"
+                placeholder="Ej: pago quincenal mayo" /></div>
+          </div>
+
+          <div class="ai" style="margin-top:4px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            El cobro se acredita al saldo del cliente en forma inmediata. Aparecerá como «Recibo de Cobro» en el
+            historial.
+          </div>
+        </div>
+        <div class="panel-foot">
+          <button class="btn bo" onclick="closeCobro()">Cancelar</button>
+          <button class="btn bgreen" onclick="confirmarCobro()">Confirmar cobro</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+     MODAL: VISTA PREVIA DE RECIBO DE COBRO (DETALLE Y CHEQUES)
+════════════════════════════════════════════════════════════════════ -->
+    <div class="mo-overlay" id="mo-recibo-detalle" onclick="closeReciboModalOutside(event)">
+      <div style="background:#fff; border-radius:var(--rl); width:760px; max-height:90vh; box-shadow:0 8px 40px rgba(15,0,53,.22); animation:moIn .16s ease; display:flex; flex-direction:column; overflow:hidden;">
+        <div class="panel-hdr" style="background:var(--navy); color:#fff; padding:16px 20px;">
+          <div>
+            <div class="panel-title" style="color:#fff; font-size:16px;" id="recibo-modal-title">Recibo de Cobro</div>
+            <div style="font-size:12px; color:rgba(255,255,255,.7); margin-top:2px;" id="recibo-modal-subtitle">SmartFran POS — Comprobante Oficial</div>
+          </div>
+          <button class="panel-close" style="color:#fff;" onclick="closeReciboModal()">✕</button>
+        </div>
+        <div class="panel-body" style="padding:20px; overflow-y:auto;" id="recibo-modal-body">
+          <!-- Contenido generado dinámicamente -->
+        </div>
+        <div class="panel-foot" style="padding:14px 20px; border-top:1px solid var(--g100); display:flex; justify-content:space-between; align-items:center; background:var(--g50);">
+          <button class="btn bo" onclick="imprimirRecibo()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg> Imprimir / Exportar PDF</button>
+          <button class="btn bp" onclick="closeReciboModal()">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════════════════════════════════
+     MODAL: EMITIR FACTURA CONSOLIDADA
+════════════════════════════════════════════════════════════════════ -->
+    <div class="mo-overlay" id="mo-emitir">
+      <div
+        style="background:#fff;border-radius:var(--rl);width:480px;box-shadow:0 8px 40px rgba(15,0,53,.22);animation:moIn .16s ease">
+        <div
+          style="padding:20px 22px 14px;border-bottom:1px solid var(--g100);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:15px;font-weight:700;color:var(--g800)">Emitir Factura Consolidada</div>
+          <button onclick="closeMo()"
+            style="background:none;border:none;cursor:pointer;color:var(--g400);font-size:18px;padding:4px;border-radius:var(--r)">✕</button>
+        </div>
+        <div style="padding:18px 22px">
+          <div style="font-size:13px;color:var(--g600);line-height:1.6;margin-bottom:14px">
+            Se emitirá <strong>1 factura</strong> agrupando <strong>3 pedidos</strong> de <strong>Distribuidora El
+              Sol</strong>:
+          </div>
+          <div
+            style="background:var(--g50);border:1px solid var(--g200);border-radius:var(--r);padding:12px 14px;margin-bottom:14px">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span
+                style="color:var(--g600)">Pedidos incluidos</span><span style="font-weight:600">3 pedidos</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span
+                style="color:var(--g600)">Período</span><span style="font-weight:600">22/05 → 28/05/2026</span></div>
+            <div
+              style="display:flex;justify-content:space-between;font-size:14px;border-top:1px solid var(--g200);padding-top:8px;margin-top:4px">
+              <span style="font-weight:700">Total a facturar</span><span
+                style="font-weight:700;color:var(--accent)">$259.600</span></div>
+          </div>
+          <div style="margin-bottom:14px">
+            <div class="fld">
+              <div class="fld-wrap hv"><label>Tipo de comprobante</label>
+                <select>
+                  <option>Factura A</option>
+                  <option>Factura B</option>
+                  <option>Factura C</option>
+                </select>
+              </div>
+              <span class="farr" style="top:29px">▼</span>
+            </div>
+          </div>
+          <div class="ai aw">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            La factura se enviará a ARCA/AFIP para obtener el CAE. Una vez emitida, su anulación solo puede realizarse
+            desde SFC Admin.
+          </div>
+        </div>
+        <div style="padding:14px 22px;border-top:1px solid var(--g100);display:flex;justify-content:flex-end;gap:8px">
+          <button class="btn bo" onclick="closeMo()">Cancelar</button>
+          <button class="btn bp"
+            onclick="closeMo();alert('✓ Factura FA-2026-0442 emitida correctamente.\nCAE: 74012345678901\nVencimiento CAE: 20/06/2026')">Emitir
+            factura</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════════
+     MODAL: CONFIRMAR ANULACIÓN CON MOTIVO OBLIGATORIO
+════════════════════════════════════════════════════════════════════ -->
+    <div class="mo-overlay" id="mo-anulacion" onclick="closeAnulacionOutside(event)">
+      <div style="background:#fff; border-radius:var(--rl); width:440px; box-shadow:0 8px 40px rgba(15,0,53,.22); animation:moIn .16s ease; display:flex; flex-direction:column; overflow:hidden;">
+        <div class="panel-hdr">
+          <div>
+            <div class="panel-title">Anular Cobro</div>
+          </div>
+          <button class="panel-close" onclick="closeAnulacionModal()">✕</button>
+        </div>
+        <div class="panel-body">
+          <div style="font-size:13px; color:var(--g600); line-height:1.6; margin-bottom:14px">
+            Para proceder con la anulación del recibo <strong id="anulacion-doc-num">REC-XXXX</strong>, debe ingresar un motivo obligatorio:
+          </div>
+          <div class="fld" style="margin-bottom:14px">
+            <div class="fld-wrap">
+              <label>Motivo de la anulación (Obligatorio)</label>
+              <input type="text" id="anulacion-motivo" placeholder="Ej: Error en el importe registrado..." />
+            </div>
+          </div>
+        </div>
+        <div class="panel-foot">
+          <button class="btn bo" onclick="closeAnulacionModal()">Cancelar</button>
+          <button class="btn bgreen" style="background:var(--red); color:#fff;" onclick="confirmarAnulacion()">Confirmar Anulación</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+
+  <script>
+    // ── NAV ────────────────────────────────────────────────────────────
+    function go(page) {
+      document.querySelectorAll('.pg').forEach(p => p.classList.remove('on'));
+      const el = document.getElementById('pg-' + page);
+      if (el) el.classList.add('on');
+      // Update sidebar
+      document.querySelectorAll('.sbi').forEach(s => s.classList.remove('act'));
+      const map = {
+        'cc-resumen': 'sb-cc-res', 'cc-detalle': 'sb-cc-res', 'cc-facturacion': 'sb-cc-fac', 'cl': 'sb-cl',
+        'cheques-informe': 'sb-chq-informe', 'cheques-salida': 'sb-chq-salida', 'cheques-devolucion': 'sb-chq-devolucion'
+      };
+      if (map[page]) document.getElementById(map[page])?.classList.add('act');
+
+      if (page === 'cheques-informe') renderChequesInforme();
+      if (page === 'cheques-salida') initSalidaCheques();
+      if (page === 'cheques-devolucion') initDevolucionCheque();
+    }
+
+    function tog(el, id) {
+      const sub = document.getElementById(id);
+      if (!sub) return;
+      const on = sub.classList.toggle('on');
+      el.classList.toggle('open', on);
+      const arr = el.querySelector('.arr');
+      if (arr) arr.textContent = on ? '▲' : '▼';
+    }
+
+    // ── MENUS 3-DOT ───────────────────────────────────────────────────
+    function openMenu(btn) {
+      const dd = btn.nextElementSibling;
+      document.querySelectorAll('.dd.on').forEach(d => { if (d !== dd) d.classList.remove('on'); });
+      dd.classList.toggle('on');
+    }
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.mw')) document.querySelectorAll('.dd.on').forEach(d => d.classList.remove('on'));
+      
+      if (!e.target.closest('.filt-btn') && !e.target.closest('.fdd')) {
+        document.querySelectorAll('.fdd.on').forEach(d => d.classList.remove('on'));
+        var fBtn = document.getElementById('fecha-filter-btn');
+        if (fBtn) {
+          var desde = document.getElementById('filter-desde') ? document.getElementById('filter-desde').value : '';
+          var hasta = document.getElementById('filter-hasta') ? document.getElementById('filter-hasta').value : '';
+          fBtn.classList.toggle('act', !!(desde || hasta));
+        }
+      }
+    });
+
+    function togFD(id, btn) {
+      document.querySelectorAll('.fdd').forEach(d => {
+        if (d.id !== id) d.classList.remove('on');
+      });
+      var el = document.getElementById(id);
+      if (el) el.classList.toggle('on');
+    }
+
+    // ── COBRO PANEL ───────────────────────────────────────────────────
+    function openCobro(nombre) {
+      document.getElementById('panel-cobro-cliente').textContent = 'Cliente: ' + nombre;
+      document.getElementById('payment-methods-list').innerHTML = '';
+      
+      const fechaInput = document.getElementById('cobro-fecha');
+      if (fechaInput) {
+        fechaInput.value = new Date().toISOString().split('T')[0];
+        fechaInput.closest('.fld-wrap')?.classList.add('hv');
+      }
+      
+      const obsInput = document.getElementById('cobro-obs');
+      if (obsInput) {
+        obsInput.value = '';
+        obsInput.closest('.fld-wrap')?.classList.remove('hv');
+      }
+
+      addPaymentRow();
+      updatePaymentTotal();
+      document.getElementById('panel-cobro').classList.add('on');
+    }
+
+    const DEPOSITOS_MAP = {
+      'Efectivo': [
+        'Caja Principal POS',
+        'Caja Chica Recaudación',
+        'Caja Tesorería Central',
+        'Caja Cobranzas Mayoristas'
+      ],
+      'Cheque': [
+        'Cartera Cheques Físicos (En Custodia)',
+        'Cartera E-Checks (Custodia Digital)',
+        'Caja Valores a Depositar'
+      ],
+      'Transferencia bancaria': [
+        'Banco Nación — Cta. Cte. N° 182-391/0',
+        'Banco Galicia — Cta. Cte. N° 401-992/3',
+        'Banco Santander — Cta. Cte. N° 088-112/5',
+        'Banco BBVA — Cta. Cte. N° 201-554/8'
+      ],
+      'Tarjeta de débito': [
+        'Cuenta Recaudación Posnet / Payway',
+        'Banco Nación — Cta. Cte. N° 182-391/0',
+        'Banco Galicia — Cta. Cte. N° 401-992/3'
+      ],
+      'Tarjeta de crédito': [
+        'Cuenta Recaudación Posnet / Payway',
+        'Banco Nación — Cta. Cte. N° 182-391/0',
+        'Banco Galicia — Cta. Cte. N° 401-992/3'
+      ],
+      'Mercado Pago': [
+        'Mercado Pago — Wallet Empresa (CVU)',
+        'Mercado Pago — Cuenta Recaudación POS'
+      ]
+    };
+
+    function updateDepositoOptions(row, metodo) {
+      const depSelect = row.querySelector('.pay-deposito-select');
+      if (!depSelect) return;
+      const opts = DEPOSITOS_MAP[metodo] || DEPOSITOS_MAP['Efectivo'];
+      depSelect.innerHTML = opts.map(o => `<option value="${o}">${o}</option>`).join('');
+      depSelect.closest('.fld-wrap')?.classList.add('hv');
+    }
+
+    let payRowCounter = 0;
+    function addPaymentRow() {
+      payRowCounter++;
+      const id = 'pay-row-' + payRowCounter;
+      const list = document.getElementById('payment-methods-list');
+      const div = document.createElement('div');
+      div.className = 'pay-row';
+      div.id = id;
+      div.style.cssText = 'border:1px solid var(--g200); border-radius:var(--r); padding:12px; background:var(--g50); position:relative; display:flex; flex-direction:column; gap:8px; transition:all .15s ease;';
+
+      const todayISO = new Date().toISOString().split('T')[0];
+      const defaultVenc = new Date();
+      defaultVenc.setDate(defaultVenc.getDate() + 30);
+      const defaultVencISO = defaultVenc.toISOString().split('T')[0];
+
+      div.innerHTML = `
+    <button type="button" onclick="removePaymentRow('${id}')" style="position:absolute; right:8px; top:8px; background:none; border:none; cursor:pointer; color:var(--g400); font-weight:bold; font-size:12px;">✕</button>
+    <div style="display:grid; grid-template-columns:1fr 1.25fr 0.95fr; gap:8px; margin-top:4px;">
+      <div class="fld">
+        <div class="fld-wrap hv">
+          <label>Forma de pago</label>
+          <select onchange="onPayMethodChange(this)" class="pay-method-select">
+            <option>Efectivo</option>
+            <option>Cheque</option>
+            <option>Transferencia bancaria</option>
+            <option>Tarjeta de débito</option>
+            <option>Tarjeta de crédito</option>
+            <option>Mercado Pago</option>
+          </select>
+        </div>
+        <span class="farr" style="top:25px">▼</span>
+      </div>
+      <div class="fld">
+        <div class="fld-wrap hv">
+          <label>Depósito / Cuenta Destino</label>
+          <select class="pay-deposito-select">
+            <!-- Rellenado dinámicamente -->
+          </select>
+        </div>
+        <span class="farr" style="top:25px">▼</span>
+      </div>
+      <div class="fld">
+        <div class="fld-wrap hv">
+          <label>Importe</label>
+          <input type="text" class="pay-amount-input" placeholder="$ 0,00" oninput="formatAndSum(this)"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor para Referencia de Transferencia/Tarjeta -->
+    <div class="pay-ref-container fld" style="display:none; margin-top:4px;">
+      <div class="fld-wrap">
+        <label>Referencia / N° Operación</label>
+        <input type="text" placeholder="N° transferencia o comprobante…" class="pay-ref-input"/>
+      </div>
+    </div>
+
+    <!-- Contenedor para Detalles del Cheque -->
+    <div class="pay-cheque-container" style="display:none; background:#fff; border:1px solid var(--g200); border-radius:6px; padding:12px; margin-top:6px; flex-direction:column; gap:10px;">
+      <div style="font-size:11px; font-weight:700; color:var(--accent); text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        Atributos Completos del Cheque
+      </div>
+
+      <!-- Fila 1: Banco (Cód + Nombre), Serie, Número -->
+      <div style="display:grid; grid-template-columns:1.3fr 0.7fr 1fr; gap:8px;">
+        <div class="fld">
+          <div class="fld-wrap hv">
+            <label>Código y Banco Emisor</label>
+            <select class="pay-chk-banco">
+              <option value="011 - Banco de la Nación Argentina">011 - Banco Nación</option>
+              <option value="007 - Banco Galicia">007 - Banco Galicia</option>
+              <option value="072 - Banco Santander Argentina">072 - Banco Santander</option>
+              <option value="017 - Banco BBVA Argentina">017 - Banco BBVA</option>
+              <option value="014 - Banco Provincia de Bs. As.">014 - Banco Provincia</option>
+              <option value="027 - Banco Macro">027 - Banco Macro</option>
+              <option value="259 - HSBC Bank Argentina">259 - HSBC Bank</option>
+              <option value="015 - Industrial and Commercial Bank (ICBC)">015 - ICBC</option>
+              <option value="029 - Banco Ciudad">029 - Banco Ciudad</option>
+              <option value="Otro - Banco Emisor">Otro Banco</option>
+            </select>
+          </div>
+          <span class="farr" style="top:25px">▼</span>
+        </div>
+        <div class="fld">
+          <div class="fld-wrap">
+            <label>N° Serie</label>
+            <input type="text" placeholder="Ej: Serie A" class="pay-chk-serie"/>
+          </div>
+        </div>
+        <div class="fld">
+          <div class="fld-wrap">
+            <label>N° de Cheque</label>
+            <input type="text" placeholder="Ej: 00418239" class="pay-chk-num"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila 2: Titular/Librador y Origen (Tercero vs Propio) -->
+      <div style="display:grid; grid-template-columns:1.3fr 1fr; gap:8px;">
+        <div class="fld">
+          <div class="fld-wrap">
+            <label>Titular / Librador ("Check Holder")</label>
+            <input type="text" placeholder="Nombre / CUIT del librador…" class="pay-chk-titular"/>
+          </div>
+        </div>
+        <div class="fld">
+          <div class="fld-wrap hv">
+            <label>Origen del Cheque</label>
+            <select class="pay-chk-origen">
+              <option value="Cheque de un tercero (Entregado por cliente)">Cheque de un tercero (Cliente)</option>
+              <option value="Cheque propio del cliente">Cheque propio del cliente</option>
+            </select>
+          </div>
+          <span class="farr" style="top:25px">▼</span>
+        </div>
+      </div>
+
+      <!-- Fila 3: Fechas (Emisión y Pago/Vencimiento - Timestamps) -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div class="fld">
+          <div class="fld-wrap hv">
+            <label>Fecha de Emisión (Timestamp)</label>
+            <input type="date" class="pay-chk-emision" value="${todayISO}"/>
+          </div>
+        </div>
+        <div class="fld">
+          <div class="fld-wrap hv">
+            <label>Fecha de Pago / Vencimiento</label>
+            <input type="date" class="pay-chk-vencimiento" value="${defaultVencISO}"/>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila 4: Formato (e-cheq/Físico) y Carácter de Orden -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div class="fld">
+          <div class="fld-wrap hv">
+            <label>Formato (Tipo)</label>
+            <select class="pay-chk-tipo" onchange="onChkTipoChange(this)">
+              <option value="Electrónico (e-cheq)">Electrónico (e-cheq)</option>
+              <option value="Físico (papel)">Físico (papel)</option>
+            </select>
+          </div>
+          <span class="farr" style="top:25px">▼</span>
+        </div>
+        <div class="fld">
+          <div class="fld-wrap hv">
+            <label>Carácter de Orden</label>
+            <select class="pay-chk-orden">
+              <option value="A la orden">A la orden</option>
+              <option value="Al portador">Al portador</option>
+            </select>
+          </div>
+          <span class="farr" style="top:25px">▼</span>
+        </div>
+      </div>
+    </div>
+  `;
+      list.appendChild(div);
+
+      updateDepositoOptions(div, 'Efectivo');
+
+      // Re-run floating labels listener for the new elements
+      const selects = div.querySelectorAll('select, input');
+      selects.forEach(inp => {
+        const mark = () => inp.value ? inp.closest('.fld-wrap').classList.add('hv') : inp.closest('.fld-wrap').classList.remove('hv');
+        ['input', 'change', 'blur'].forEach(ev => inp.addEventListener(ev, mark));
+        mark();
+      });
+    }
+
+    function removePaymentRow(id) {
+      const row = document.getElementById(id);
+      if (row) row.remove();
+      updatePaymentTotal();
+    }
+
+    function onPayMethodChange(select) {
+      const row = select.closest('.pay-row');
+      const refContainer = row.querySelector('.pay-ref-container');
+      const chkContainer = row.querySelector('.pay-cheque-container');
+      const val = select.value;
+
+      updateDepositoOptions(row, val);
+
+      if (val === 'Cheque') {
+        chkContainer.style.display = 'flex';
+        refContainer.style.display = 'none';
+        const tipoChk = row.querySelector('.pay-chk-tipo')?.value || 'Físico (papel)';
+        const depSel = row.querySelector('.pay-deposito-select');
+        if (depSel) {
+          depSel.value = tipoChk.includes('Electrónico') ? 'Cartera E-Checks (Custodia Digital)' : 'Cartera Cheques Físicos (En Custodia)';
+        }
+      } else if (val === 'Efectivo') {
+        chkContainer.style.display = 'none';
+        refContainer.style.display = 'none';
+      } else {
+        chkContainer.style.display = 'none';
+        refContainer.style.display = 'block';
+      }
+
+      row.querySelectorAll('select, input').forEach(inp => {
+        if (inp.value) inp.closest('.fld-wrap')?.classList.add('hv');
+      });
+    }
+
+    function onChkTipoChange(select) {
+      const row = select.closest('.pay-row');
+      const depSel = row.querySelector('.pay-deposito-select');
+      if (depSel && row.querySelector('.pay-method-select')?.value === 'Cheque') {
+        depSel.value = select.value.includes('Electrónico') ? 'Cartera E-Checks (Custodia Digital)' : 'Cartera Cheques Físicos (En Custodia)';
+      }
+    }
+
+    function formatAndSum(input) {
+      updatePaymentTotal();
+    }
+
+    function updatePaymentTotal() {
+      let total = 0;
+      document.querySelectorAll('.pay-amount-input').forEach(inp => {
+        let cleanVal = inp.value.replace(/[^0-9.]/g, '');
+        const val = parseFloat(cleanVal) || 0;
+        total += val;
+      });
+      document.getElementById('payment-total-sum').textContent = '$' + total.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function closeCobro() {
+      document.getElementById('panel-cobro').classList.remove('on');
+    }
+    function closePanelOutside(e) {
+      if (e.target === document.getElementById('panel-cobro')) closeCobro();
+    }
+
+    function confirmarCobro() {
+      const rows = document.querySelectorAll('.pay-row');
+      if (!rows.length) {
+        alert('Debe agregar al menos una forma de pago.');
+        return;
+      }
+
+      let totalSum = 0;
+      let desglosePagos = [];
+      let chequesList = [];
+      let hasError = false;
+
+      rows.forEach((row, index) => {
+        if (hasError) return;
+        const selectMetodo = row.querySelector('.pay-method-select');
+        const selectDeposito = row.querySelector('.pay-deposito-select');
+        const amountInput = row.querySelector('.pay-amount-input');
+        const metodo = selectMetodo ? selectMetodo.value : 'Efectivo';
+        const deposito = selectDeposito ? selectDeposito.value : 'Caja Principal POS';
+        
+        let cleanVal = amountInput ? amountInput.value.replace(/[^0-9.]/g, '') : '0';
+        const val = parseFloat(cleanVal) || 0;
+
+        if (val <= 0) {
+          alert(`En la forma de pago ${index + 1} (${metodo}), ingrese un importe válido mayor a $0.`);
+          hasError = true;
+          return;
+        }
+
+        totalSum += val;
+
+        if (metodo === 'Cheque') {
+          const banco = row.querySelector('.pay-chk-banco')?.value || '011 - Banco Nación';
+          const serie = row.querySelector('.pay-chk-serie')?.value.trim() || '';
+          const numCheque = row.querySelector('.pay-chk-num')?.value.trim() || '';
+          const titular = row.querySelector('.pay-chk-titular')?.value.trim() || currentClient;
+          const origen = row.querySelector('.pay-chk-origen')?.value || 'Cheque de un tercero (Entregado por cliente)';
+          const fechaEmision = row.querySelector('.pay-chk-emision')?.value || new Date().toISOString().split('T')[0];
+          const fechaVencimiento = row.querySelector('.pay-chk-vencimiento')?.value || new Date().toISOString().split('T')[0];
+          const orden = row.querySelector('.pay-chk-orden')?.value || 'A la orden';
+          const tipoCheque = row.querySelector('.pay-chk-tipo')?.value || 'Electrónico (e-cheq)';
+
+          if (!numCheque) {
+            alert(`Por favor ingrese el Número de Cheque para el cheque de ${banco}.`);
+            hasError = true;
+            return;
+          }
+
+          const chequeData = {
+            banco,
+            serie,
+            numCheque,
+            titular,
+            origen,
+            fechaEmision,
+            fechaVencimiento,
+            orden,
+            tipoCheque,
+            deposito,
+            importe: val
+          };
+          chequesList.push(chequeData);
+
+          desglosePagos.push({
+            metodo: 'Cheque',
+            detalle: `${tipoCheque} N° ${numCheque} (${banco}) - Librador: ${titular}`,
+            deposito: deposito,
+            importe: val,
+            cheque: chequeData
+          });
+        } else if (metodo !== 'Efectivo') {
+          const refInput = row.querySelector('.pay-ref-input');
+          const refVal = refInput ? refInput.value.trim() : '';
+          desglosePagos.push({
+            metodo: metodo,
+            detalle: refVal ? `Ref: ${refVal}` : metodo,
+            deposito: deposito,
+            importe: val
+          });
+        } else {
+          desglosePagos.push({
+            metodo: 'Efectivo',
+            detalle: 'Efectivo en mano',
+            deposito: deposito,
+            importe: val
+          });
+        }
+      });
+
+      if (hasError) return;
+
+      if (totalSum <= 0) {
+        alert('Por favor registre al menos una forma de pago con un importe mayor a cero.');
+        return;
+      }
+
+      const client = CLIENTES_DATA[currentClient];
+      if (!client) return;
+
+      const dateVal = document.getElementById('cobro-fecha').value || new Date().toISOString().split('T')[0];
+      const obsVal = document.getElementById('cobro-obs').value.trim();
+
+      let nextDocNum = 1;
+      client.movimientos.forEach(m => {
+        if (m.tipo === 'RECIBO') {
+          const num = parseInt(m.doc.replace('REC-2026-', ''), 10);
+          if (!isNaN(num) && num >= nextDocNum) nextDocNum = num + 1;
+        }
+      });
+      const docStr = 'REC-2026-' + String(nextDocNum).padStart(4, '0');
+
+      let conceptoStr = 'Cobro';
+      if (chequesList.length > 0) {
+        if (chequesList.length === 1) {
+          conceptoStr += ` — Cheque N° ${chequesList[0].numCheque} (${chequesList[0].banco})`;
+        } else {
+          conceptoStr += ` — ${chequesList.length} Cheques (${chequesList.map(c=>'N° '+c.numCheque).join(', ')})`;
+        }
+        if (desglosePagos.length > chequesList.length) {
+          conceptoStr += ' + Otros pagos';
+        }
+      } else if (desglosePagos.length === 1) {
+        conceptoStr += ` — ${desglosePagos[0].metodo}`;
+      } else {
+        conceptoStr += ` — Múltiples medios de pago`;
+      }
+      if (obsVal) conceptoStr += ` (${obsVal})`;
+
+      client.movimientos.push({
+        fecha: dateVal,
+        tipo: 'RECIBO',
+        concepto: conceptoStr,
+        cargo: 0,
+        pago: totalSum,
+        doc: docStr,
+        obs: obsVal,
+        desglose: desglosePagos,
+        cheques: chequesList
+      });
+
+      client.pendiente -= totalSum;
+      client.disponible += totalSum;
+
+      // Registrar los cheques recibidos en la cartera de Cheques de Terceros
+      chequesList.forEach(c => {
+        registrarChequeEnCartera(c, currentClient);
+      });
+
+      document.getElementById('cl-det-pendiente').textContent = '$' + client.pendiente.toLocaleString('es-AR');
+      
+      const disponibleEl = document.getElementById('cl-det-disponible');
+      if (disponibleEl) disponibleEl.textContent = '$' + client.disponible.toLocaleString('es-AR');
+      
+      const badgeDisp = document.getElementById('cl-det-disponible-badge');
+      if (badgeDisp) {
+        if (client.disponible < 0) {
+          badgeDisp.style.background = 'var(--red-s)';
+          badgeDisp.style.color = 'var(--red)';
+          badgeDisp.style.borderColor = 'rgba(226,75,74,.2)';
+        } else if (client.disponible < 5000) {
+          badgeDisp.style.background = 'var(--amber-s)';
+          badgeDisp.style.color = 'var(--amber)';
+          badgeDisp.style.borderColor = 'rgba(186,117,23,.2)';
+        } else {
+          badgeDisp.style.background = 'var(--green-s)';
+          badgeDisp.style.color = 'var(--green)';
+          badgeDisp.style.borderColor = 'rgba(29,158,117,.2)';
+        }
+      }
+
+      const tableRows = document.querySelectorAll('#pg-cc-resumen tbody tr');
+      tableRows.forEach(row => {
+        const nameDiv = row.querySelector('td:nth-child(2) div:first-child');
+        if (nameDiv && nameDiv.textContent.trim() === currentClient) {
+          const balanceSpan = row.querySelector('td:nth-child(4) span');
+          if (balanceSpan) {
+            balanceSpan.textContent = '$' + client.pendiente.toLocaleString('es-AR');
+            balanceSpan.className = client.pendiente <= 0 ? 'bdg bdg-g' : 'bdg bdg-r';
+          }
+          const disponibleTd = row.querySelector('td:nth-child(5)');
+          if (disponibleTd) {
+            disponibleTd.textContent = '$' + client.disponible.toLocaleString('es-AR');
+            if (client.disponible < 0) {
+              disponibleTd.style.color = 'var(--red)';
+            } else if (client.disponible < 5000) {
+              disponibleTd.style.color = 'var(--amber)';
+            } else {
+              disponibleTd.style.color = 'var(--green)';
+            }
+          }
+        }
+      });
+
+      renderLibroMayor();
+      closeCobro();
+
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;top:60px;right:24px;background:#1d9e75;color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);animation:slideInRight .2s ease';
+      banner.textContent = `✓ Recibo ${docStr} por $${totalSum.toLocaleString('es-AR')} registrado con éxito.`;
+      document.body.appendChild(banner);
+      setTimeout(() => banner.remove(), 3500);
+    }
+
+    function verReciboDetalle(docNum) {
+      const client = CLIENTES_DATA[currentClient];
+      if (!client) return;
+      const mov = client.movimientos.find(m => m.doc === docNum);
+      if (!mov) {
+        alert('No se encontraron detalles para el comprobante ' + docNum);
+        return;
+      }
+
+      document.getElementById('recibo-modal-title').textContent = `Recibo de Cobro N° ${mov.doc}`;
+      document.getElementById('recibo-modal-subtitle').textContent = `Cliente: ${currentClient} | CUIT: ${client.cuit}`;
+
+      const parts = mov.fecha.split('-');
+      const formattedFecha = parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : mov.fecha;
+
+      let chequesHtml = '';
+      if (mov.cheques && mov.cheques.length > 0) {
+        chequesHtml = `
+          <div style="margin-top:16px;">
+            <div style="font-size:12px; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; display:flex; align-items:center; gap:6px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              Detalle Completo de Cheques Registrados (${mov.cheques.length})
+            </div>
+            <div style="border:1px solid var(--g200); border-radius:6px; overflow:hidden;">
+              <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:left;">
+                <thead>
+                  <tr style="background:var(--g100); color:var(--g600); font-size:11px; text-transform:uppercase;">
+                    <th style="padding:8px 10px;">Cód y Banco</th>
+                    <th style="padding:8px 10px;">Serie / N° Cheque</th>
+                    <th style="padding:8px 10px;">Titular / Librador</th>
+                    <th style="padding:8px 10px;">Origen / Formato / Orden</th>
+                    <th style="padding:8px 10px;">Emisión / Venc.</th>
+                    <th style="padding:8px 10px;">Depósito Destino</th>
+                    <th style="padding:8px 10px; text-align:right;">Importe</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${mov.cheques.map(c => `
+                    <tr style="border-top:1px solid var(--g100);">
+                      <td style="padding:8px 10px; font-weight:600;">${c.banco}</td>
+                      <td style="padding:8px 10px; font-family:monospace; font-weight:700; color:var(--accent);">
+                        ${c.serie ? `<span style="color:var(--g600); font-size:11px;">[${c.serie}]</span> ` : ''}${c.numCheque}
+                      </td>
+                      <td style="padding:8px 10px; font-size:11px;">
+                        <strong>${c.titular || currentClient}</strong>
+                      </td>
+                      <td style="padding:8px 10px; font-size:10px;">
+                        <span class="bdg bdg-g" style="font-size:9px;">${(c.origen || '').includes('tercero') ? 'Tercero' : 'Propio'}</span>
+                        <span class="bdg" style="font-size:9px; background:var(--g100); color:var(--g800); margin-left:2px;">${c.tipoCheque}</span><br/>
+                        <span style="color:var(--g600); font-size:10px;">${c.orden}</span>
+                      </td>
+                      <td style="padding:8px 10px; color:var(--g600); font-size:11px;">
+                        Emi: ${formatShortDate(c.fechaEmision)}<br/>
+                        <strong>Venc: ${formatShortDate(c.fechaVencimiento)}</strong>
+                      </td>
+                      <td style="padding:8px 10px; font-size:11px; color:var(--navy); font-weight:600;">
+                        📍 ${c.deposito || 'Cartera Cheques'}
+                      </td>
+                      <td style="padding:8px 10px; text-align:right; font-weight:700; color:var(--g800);">$${c.importe.toLocaleString('es-AR')}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      } else if (mov.concepto.includes('Cheque')) {
+        chequesHtml = `
+          <div style="margin-top:16px; background:var(--amber-s); border:1px solid rgba(186,117,23,.2); border-radius:6px; padding:12px; font-size:12px; color:var(--amber);">
+            <strong>📌 Cheque registrado en lote:</strong> ${mov.concepto}
+          </div>
+        `;
+      }
+
+      let desgloseHtml = '';
+      if (mov.desglose && mov.desglose.length > 0) {
+        desgloseHtml = `
+          <div style="margin-top:16px;">
+            <div style="font-size:12px; font-weight:700; color:var(--navy); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Resumen de Medios de Pago y Destino de Fondos</div>
+            <div style="background:var(--g50); border:1px solid var(--g200); border-radius:6px; padding:10px 12px; display:flex; flex-direction:column; gap:8px;">
+              ${mov.desglose.map(d => `
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; border-bottom:1px dashed var(--g200); padding-bottom:6px;">
+                  <div>
+                    <strong>${d.metodo}</strong> ${d.detalle ? `<small style="color:var(--g400)">(${d.detalle})</small>` : ''}
+                    <div style="font-size:11px; color:var(--accent); font-weight:600; margin-top:1px;">📍 Depósito Destino: ${d.deposito || 'Caja Principal POS'}</div>
+                  </div>
+                  <span style="font-weight:700; color:var(--g800);">$${d.importe.toLocaleString('es-AR')}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      const bodyHtml = `
+        <div style="background:var(--g50); border:1px solid var(--g200); border-radius:8px; padding:16px; margin-bottom:14px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <div style="font-size:11px; color:var(--g400); text-transform:uppercase; font-weight:700;">Cliente</div>
+            <div style="font-size:14px; font-weight:700; color:var(--navy); margin-top:2px;">${currentClient}</div>
+            <div style="font-size:12px; color:var(--g600);">CUIT: ${client.cuit}</div>
+          </div>
+          <div>
+            <div style="font-size:11px; color:var(--g400); text-transform:uppercase; font-weight:700;">Detalles del Comprobante</div>
+            <div style="font-size:13px; font-weight:600; color:var(--g800); margin-top:2px;">N° ${mov.doc}</div>
+            <div style="font-size:12px; color:var(--g600);">Fecha: ${formattedFecha}</div>
+          </div>
+        </div>
+
+        <div style="background:linear-gradient(135deg, var(--navy) 0%, #1e1045 100%); color:#fff; border-radius:8px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 4px 12px rgba(15,0,53,.15);">
+          <div>
+            <span style="font-size:12px; color:rgba(255,255,255,.7); text-transform:uppercase; letter-spacing:0.5px;">Monto Total Cobrado</span>
+            <div style="font-size:22px; font-weight:800; color:#4de7b3; margin-top:2px;">$${mov.pago.toLocaleString('es-AR')}</div>
+          </div>
+          <span class="bdg" style="background:rgba(255,255,255,.15); color:#fff; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:600;">ACREDITADO</span>
+        </div>
+
+        ${desgloseHtml}
+        ${chequesHtml}
+
+        ${mov.obs ? `
+          <div style="margin-top:14px; font-size:12px; color:var(--g600); background:var(--g50); border-left:3px solid var(--accent); padding:8px 12px; border-radius:0 6px 6px 0;">
+            <strong>Observación:</strong> ${mov.obs}
+          </div>
+        ` : ''}
+      `;
+
+      document.getElementById('recibo-modal-body').innerHTML = bodyHtml;
+      document.getElementById('mo-recibo-detalle').classList.add('on');
+    }
+
+    function closeReciboModal() {
+      document.getElementById('mo-recibo-detalle').classList.remove('on');
+    }
+
+    function closeReciboModalOutside(e) {
+      if (e.target === document.getElementById('mo-recibo-detalle')) closeReciboModal();
+    }
+
+    function imprimirRecibo() {
+      alert('🖨️ Generando vista de impresión / PDF para el Recibo de Cobro...');
+    }
+
+    function formatShortDate(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+      return dateStr;
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeCobro(); closeMo(); closeAnulacionModal(); closeReciboModal(); closeChqDetalleModal(); } });
+
+    // ── MODAL EMITIR ──────────────────────────────────────────────────
+    function openEmitirModal() { document.getElementById('mo-emitir').classList.add('on'); }
+    function closeMo() { document.querySelectorAll('.mo-overlay').forEach(m => m.classList.remove('on')); }
+
+    // ── FAC SELECCIÓN ─────────────────────────────────────────────────
+    const importes = { 'chk-1': 88200, 'chk-2': 95800, 'chk-3': 75600 };
+    function updateSel() {
+      const checks = document.querySelectorAll('.fac-chk-item');
+      let count = 0, total = 0;
+      checks.forEach(c => { if (c.checked) { count++; total += importes[c.id] || 0; } });
+      document.getElementById('sel-count').textContent = count + ' pedido' + (count !== 1 ? 's' : '') + ' seleccionado' + (count !== 1 ? 's' : '');
+      document.getElementById('sel-total').textContent = 'Total: $' + total.toLocaleString('es-AR');
+      document.getElementById('sel-bar').classList.toggle('on', count > 0);
+      document.getElementById('chk-all').indeterminate = count > 0 && count < checks.length;
+      document.getElementById('chk-all').checked = count === checks.length;
+    }
+    function toggleAll(cb) {
+      document.querySelectorAll('.fac-chk-item').forEach(c => c.checked = cb.checked);
+      updateSel();
+    }
+
+    // ── FLOATING LABELS ───────────────────────────────────────────────
+    document.querySelectorAll('.fld-wrap input,.fld-wrap select').forEach(inp => {
+      const mark = () => inp.value ? inp.closest('.fld-wrap').classList.add('hv') : inp.closest('.fld-wrap').classList.remove('hv');
+      ['input', 'change', 'blur'].forEach(ev => inp.addEventListener(ev, mark));
+      mark();
+    });
+
+    // ── DINAMISMO LIBRO MAYOR & SALDO INICIAL PRECALCULADO ────────────
+    const CLIENTES_DATA = {
+      'Distribuidora El Sol': {
+        cuit: '20-12345678-9',
+        limite: 500000,
+        pendiente: 100400,
+        disponible: 399600,
+        baseSaldoInicial: 200000,
+        movimientos: [
+          { fecha: '2026-05-02', tipo: 'FACTURA', concepto: 'Factura — Pedido #POS-1001', cargo: 45000, pago: 0, doc: 'FA-2026-0420' },
+          { fecha: '2026-05-04', tipo: 'RECIBO', concepto: 'Cobro — Efectivo', cargo: 0, pago: 45000, doc: 'REC-2026-0001' },
+          { fecha: '2026-05-06', tipo: 'FACTURA', concepto: 'Factura — Pedido #POS-1005', cargo: 80000, pago: 0, doc: 'FA-2026-0422' },
+          { fecha: '2026-05-08', tipo: 'RECIBO', concepto: 'Cobro — Transferencia', cargo: 0, pago: 50000, doc: 'REC-2026-0002' },
+          { fecha: '2026-05-10', tipo: 'FACTURA', concepto: 'Factura — Pedido #POS-1012', cargo: 120000, pago: 0, doc: 'FA-2026-0425' },
+          { fecha: '2026-05-12', tipo: 'RECIBO', concepto: 'Cobro — Transferencia', cargo: 0, pago: 100000, doc: 'REC-2026-0003' },
+          { fecha: '2026-05-14', tipo: 'NC', concepto: 'Nota de Crédito — Descuento especial', cargo: 0, pago: 15000, doc: 'NC-2026-0001' },
+          { fecha: '2026-05-15', tipo: 'FACTURA', concepto: 'Factura — Pedido #POS-1020', cargo: 65000, pago: 0, doc: 'FA-2026-0430' },
+          {
+            fecha: '2026-05-18',
+            tipo: 'RECIBO',
+            concepto: 'Cobro — Cheque N° 0019284 (Banco Galicia)',
+            cargo: 0,
+            pago: 65000,
+            doc: 'REC-2026-0004',
+            desglose: [
+              {
+                metodo: 'Cheque',
+                detalle: 'Electrónico (e-cheq) N° 0019284 (Banco Galicia) - Librador: Distribuidora El Sol',
+                deposito: 'Cartera E-Checks (Custodia Digital)',
+                importe: 65000
+              }
+            ],
+            cheques: [
+              {
+                banco: '007 - Banco Galicia',
+                serie: 'Serie B',
+                numCheque: '0019284',
+                titular: 'Distribuidora El Sol',
+                origen: 'Cheque propio del cliente',
+                fechaEmision: '2026-05-15',
+                fechaVencimiento: '2026-06-15',
+                orden: 'A la orden',
+                tipoCheque: 'Electrónico (e-cheq)',
+                deposito: 'Cartera E-Checks (Custodia Digital)',
+                importe: 65000
+              }
+            ]
+          },
+          { fecha: '2026-05-20', tipo: 'ANULADO', concepto: 'Anulación — Recibo #REC-2026-0088', cargo: 0, pago: 50000, doc: 'REC-2026-0088', anulado: true },
+          {
+            fecha: '2026-05-22',
+            tipo: 'RECIBO',
+            concepto: 'Cobro — Cheque N° 0041823 (Banco Nación)',
+            cargo: 0,
+            pago: 200000,
+            doc: 'REC-2026-0009',
+            desglose: [
+              {
+                metodo: 'Cheque',
+                detalle: 'Físico (papel) N° 0041823 (Banco Nación) - Librador: Agroindustrias S.A.',
+                deposito: 'Cartera Cheques Físicos (En Custodia)',
+                importe: 200000
+              }
+            ],
+            cheques: [
+              {
+                banco: '011 - Banco de la Nación Argentina',
+                serie: 'Serie A',
+                numCheque: '0041823',
+                titular: 'Agroindustrias S.A.',
+                origen: 'Cheque de un tercero (Entregado por cliente)',
+                fechaEmision: '2026-05-20',
+                fechaVencimiento: '2026-06-20',
+                orden: 'A la orden',
+                tipoCheque: 'Físico (papel)',
+                deposito: 'Cartera Cheques Físicos (En Custodia)',
+                importe: 200000
+              }
+            ]
+          },
+          { fecha: '2026-05-24', tipo: 'FACTURA', concepto: 'Factura — Pedido #POS-1048', cargo: 110000, pago: 0, doc: 'FA-2026-0435' },
+          { fecha: '2026-05-26', tipo: 'FACTURA', concepto: 'Factura — Pedido #POS-1058', cargo: 95800, pago: 0, doc: 'FA-2026-0440' },
+          { fecha: '2026-05-28', tipo: 'NC', concepto: 'Nota de Crédito — Devolución #POS-1071', cargo: 0, pago: 50600, doc: 'NC-2026-0012' },
+          { fecha: '2026-05-30', tipo: 'FACTURA', concepto: 'Factura — Pedido #POS-1075', cargo: 75000, pago: 0, doc: 'FA-2026-0441' },
+          { fecha: '2026-06-01', tipo: 'RECIBO', concepto: 'Cobro — Transferencia ref. 11029', cargo: 0, pago: 80000, doc: 'REC-2026-0008' },
+          { fecha: '2026-06-03', tipo: 'RECIBO', concepto: 'Cobro — Transferencia ref. 0034781', cargo: 0, pago: 120000, doc: 'REC-2026-0010' },
+          { fecha: '2026-06-05', tipo: 'FACTURA', concepto: 'Factura — Pedido #POS-1089', cargo: 45200, pago: 0, doc: 'FA-2026-0442' },
+          { fecha: '2026-06-06', tipo: 'FACTURA', concepto: 'Factura — Pedido #POS-1102', cargo: 90000, pago: 0, doc: 'FA-2026-0445' },
+          { fecha: '2026-06-08', tipo: 'RECIBO', concepto: 'Cobro — Mercado Pago', cargo: 0, pago: 90000, doc: 'REC-2026-0011' },
+          { fecha: '2026-06-09', tipo: 'FACTURA', concepto: 'Factura — Pedido #POS-1110', cargo: 55000, pago: 0, doc: 'FA-2026-0448' },
+          { fecha: '2026-06-10', tipo: 'RECIBO', concepto: 'Cobro — Transferencia', cargo: 0, pago: 50000, doc: 'REC-2026-0012' }
+        ]
+      },
+      'Heladería Palermo': {
+        cuit: '27-28901234-5',
+        limite: 300000,
+        pendiente: 185000,
+        disponible: 115000,
+        baseSaldoInicial: 100000,
+        movimientos: [
+          { fecha: '2026-05-22', tipo: 'FACTURA', concepto: 'Factura — Pedido #POS-1022', cargo: 150000, pago: 0, doc: 'FA-2026-0410' },
+          { fecha: '2026-05-28', tipo: 'RECIBO', concepto: 'Cobro — Transferencia ref. 88301', cargo: 0, pago: 65000, doc: 'REC-2026-0005' }
+        ]
+      },
+      'Almacén Don Pedro': {
+        cuit: '20-55443322-1',
+        limite: 150000,
+        pendiente: 148500,
+        disponible: 1500,
+        baseSaldoInicial: 148500,
+        movimientos: []
+      },
+      'Kiosco Central': {
+        cuit: '27-87654321-5',
+        limite: 150000,
+        pendiente: 0,
+        disponible: 150000,
+        baseSaldoInicial: 0,
+        movimientos: []
+      },
+      'Snacks & Co.': {
+        cuit: '30-99887766-2',
+        limite: 200000,
+        pendiente: 92400,
+        disponible: 107600,
+        baseSaldoInicial: 92400,
+        movimientos: []
+      },
+      'Supermercado Norte': {
+        cuit: '30-11223344-8',
+        limite: 600000,
+        pendiente: 592400,
+        disponible: -92400,
+        baseSaldoInicial: 592400,
+        movimientos: []
+      }
+    };
+
+    let currentClient = 'Distribuidora El Sol';
+    let lmCurrentPage = 1;
+    let lmPageSize = 10;
+
+    function changeLmPageSize(size) {
+      lmPageSize = parseInt(size, 10);
+      lmCurrentPage = 1;
+      renderLibroMayor();
+    }
+
+    function lmGoToPage(action) {
+      const client = CLIENTES_DATA[currentClient] || CLIENTES_DATA['Distribuidora El Sol'];
+      const movimientos = client.movimientos || [];
+      
+      const desdeVal = document.getElementById('filter-desde').value;
+      const hastaVal = document.getElementById('filter-hasta').value;
+      const tipoVal = document.getElementById('filter-tipo').value;
+
+      const processedMovs = movimientos.filter(m => {
+        if (desdeVal && m.fecha < desdeVal) return false;
+        if (hastaVal && m.fecha > hastaVal) return false;
+        if (tipoVal !== 'Todos los movimientos') {
+          if (tipoVal === 'Facturas' && m.tipo !== 'FACTURA') return false;
+          if (tipoVal === 'Recibos' && m.tipo !== 'RECIBO') return false;
+          if (tipoVal === 'Notas de Crédito (NC)' && m.tipo !== 'NC') return false;
+        }
+        return true;
+      });
+
+      const totalItems = processedMovs.length;
+      const totalPages = Math.ceil(totalItems / lmPageSize) || 1;
+
+      if (action === 'first') {
+        lmCurrentPage = 1;
+      } else if (action === 'prev') {
+        if (lmCurrentPage > 1) lmCurrentPage--;
+      } else if (action === 'next') {
+        if (lmCurrentPage < totalPages) lmCurrentPage++;
+      } else if (action === 'last') {
+        lmCurrentPage = totalPages;
+      }
+      renderLibroMayor();
+    }
+
+    function verDetalle(nombre) {
+      currentClient = nombre;
+      lmCurrentPage = 1;
+      const pagSizeSel = document.getElementById('lm-pag-size');
+      if (pagSizeSel) pagSizeSel.value = String(lmPageSize);
+      
+      const client = CLIENTES_DATA[nombre] || CLIENTES_DATA['Distribuidora El Sol'];
+      
+      document.getElementById('cl-det-name').textContent = nombre;
+      document.getElementById('cl-det-cuit').textContent = 'CUIT: ' + client.cuit;
+      document.getElementById('cl-det-limite').textContent = '$' + client.limite.toLocaleString('es-AR');
+      document.getElementById('cl-det-pendiente').textContent = '$' + client.pendiente.toLocaleString('es-AR');
+      
+      const disponibleEl = document.getElementById('cl-det-disponible');
+      disponibleEl.textContent = '$' + client.disponible.toLocaleString('es-AR');
+      
+      const badgeDisp = document.getElementById('cl-det-disponible-badge');
+      if (client.disponible < 0) {
+        badgeDisp.style.background = 'var(--red-s)';
+        badgeDisp.style.color = 'var(--red)';
+        badgeDisp.style.borderColor = 'rgba(226,75,74,.2)';
+      } else if (client.disponible < 5000) {
+        badgeDisp.style.background = 'var(--amber-s)';
+        badgeDisp.style.color = 'var(--amber)';
+        badgeDisp.style.borderColor = 'rgba(186,117,23,.2)';
+      } else {
+        badgeDisp.style.background = 'var(--green-s)';
+        badgeDisp.style.color = 'var(--green)';
+        badgeDisp.style.borderColor = 'rgba(29,158,117,.2)';
+      }
+      
+      renderLibroMayor();
+      go('cc-detalle');
+    }
+
+    function renderLibroMayor(resetPage = false) {
+      if (resetPage) {
+        lmCurrentPage = 1;
+      }
+      const desdeVal = document.getElementById('filter-desde').value;
+      const hastaVal = document.getElementById('filter-hasta').value;
+      const tipoVal = document.getElementById('filter-tipo').value;
+
+      const tbody = document.getElementById('lm-tbody');
+      if (!tbody) return;
+
+      const client = CLIENTES_DATA[currentClient] || CLIENTES_DATA['Distribuidora El Sol'];
+      const movimientos = client.movimientos;
+      const baseSaldoInicial = client.baseSaldoInicial;
+      
+      const isPalermo = false;
+      
+      // Actualizar encabezados de la tabla
+      const theadTr = document.getElementById('lm-thead-tr');
+      if (theadTr) {
+        if (isPalermo) {
+          theadTr.innerHTML = `
+            <th>Fecha</th>
+            <th>Concepto / Documento</th>
+            <th style="text-align:right">Importe</th>
+            <th style="text-align:right">Saldo</th>
+            <th style="width:36px"></th>
+          `;
+        } else {
+          theadTr.innerHTML = `
+            <th>Fecha</th>
+            <th>Concepto / Documento</th>
+            <th style="text-align:right">Debe</th>
+            <th style="text-align:right">Haber</th>
+            <th style="text-align:right">Saldo</th>
+            <th style="width:36px"></th>
+          `;
+        }
+      }
+
+      // 1. Calcular Saldo Inicial (anterior a la fecha de inicio)
+      let saldoAcumulado = baseSaldoInicial;
+      const movsAnteriores = movimientos.filter(m => {
+        if (m.tipo === 'ANULADO') return false;
+        return m.fecha < desdeVal;
+      });
+
+      movsAnteriores.forEach(m => {
+        saldoAcumulado += m.cargo - m.pago;
+      });
+
+      // Calcular Saldo Posterior (al cierre del período, si hay fecha fin, o el total actual)
+      let saldoPosterior = baseSaldoInicial;
+      movimientos.forEach(m => {
+        if (m.tipo !== 'ANULADO' && (!hastaVal || m.fecha <= hastaVal)) {
+          saldoPosterior += m.cargo - m.pago;
+        }
+      });
+
+      let html = '';
+
+      // Calcular Saldo Actual Total del Cliente (usado en el saldo posterior de cierre)
+      let currentTotal = baseSaldoInicial;
+      movimientos.forEach(m => {
+        if (m.tipo !== 'ANULADO') currentTotal += m.cargo - m.pago;
+      });
+
+      // Fila de Saldo Precalculado Anterior al inicio del filtro (si hay fecha inicio)
+      if (desdeVal) {
+        const parts = desdeVal.split('-');
+        const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+        dateObj.setDate(dateObj.getDate() - 1);
+
+        const prevDay = String(dateObj.getDate()).padStart(2, '0');
+        const prevMonth = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const prevYear = dateObj.getFullYear();
+        const prevDateStr = `${prevDay}/${prevMonth}/${prevYear}`;
+
+        const saldoAnteriorCls = saldoAcumulado > 0 ? 'lm-saldo-pos' : 'lm-saldo-zero';
+        const saldoAnteriorSign = saldoAcumulado < 0 ? '-' : '';
+        const saldoAnteriorText = `<span class="${saldoAnteriorCls}">${saldoAnteriorSign}$${Math.abs(saldoAcumulado).toLocaleString('es-AR')}</span>`;
+
+        if (isPalermo) {
+          html += `
+            <tr style="background:var(--g50); font-weight:600;">
+              <td style="font-size:12px;color:var(--g600);white-space:nowrap">${prevDateStr}</td>
+              <td>
+                <span style="color:var(--g800)">Saldo anterior</span>
+              </td>
+              <td style="text-align:right;color:var(--g200)">—</td>
+              <td style="text-align:right;">${saldoAnteriorText}</td>
+              <td></td>
+            </tr>
+          `;
+        } else {
+          html += `
+            <tr style="background:var(--g50); font-weight:600;">
+              <td style="font-size:12px;color:var(--g600);white-space:nowrap">${prevDateStr}</td>
+              <td>
+                <span style="color:var(--g800)">Saldo anterior</span>
+              </td>
+              <td style="text-align:right;color:var(--g200)">—</td>
+              <td style="text-align:right;color:var(--g200)">—</td>
+              <td style="text-align:right;">${saldoAnteriorText}</td>
+              <td></td>
+            </tr>
+          `;
+        }
+      }
+
+      // 2. Procesar movimientos acumulando saldo línea por línea
+      let runningSaldo = baseSaldoInicial;
+      const processedMovs = movimientos.map(m => {
+        if (m.tipo !== 'ANULADO') {
+          runningSaldo += m.cargo - m.pago;
+        }
+        return { ...m, saldoDespues: runningSaldo };
+      });
+
+      const visibleMovs = processedMovs.filter(m => {
+        if (desdeVal && m.fecha < desdeVal) return false;
+        if (hastaVal && m.fecha > hastaVal) return false;
+        if (tipoVal !== 'Todos los movimientos') {
+          if (tipoVal === 'Facturas' && m.tipo !== 'FACTURA') return false;
+          if (tipoVal === 'Recibos' && m.tipo !== 'RECIBO') return false;
+          if (tipoVal === 'Notas de Crédito (NC)' && m.tipo !== 'NC') return false;
+          if (tipoVal === 'Notas de Débito (ND)' && m.tipo !== 'ND') return false;
+        }
+        return true;
+      });
+
+      // Ordenar para dejar los anulados al final del listado visible, manteniendo cronología para los activos
+      visibleMovs.sort((a, b) => {
+        const aAnulado = !!a.anulado;
+        const bAnulado = !!b.anulado;
+        if (aAnulado && !bAnulado) return 1;
+        if (!aAnulado && bAnulado) return -1;
+        return a.fecha.localeCompare(b.fecha);
+      });
+
+      // Calcular totales por columna para la vista estándar
+      let totalSalida = 0;
+      let totalEntrada = 0;
+      if (desdeVal) {
+        if (saldoAcumulado >= 0) {
+          totalSalida += saldoAcumulado;
+        } else {
+          totalEntrada += Math.abs(saldoAcumulado);
+        }
+      }
+      visibleMovs.forEach(m => {
+        if (m.tipo !== 'ANULADO') {
+          totalSalida += m.cargo;
+          totalEntrada += m.pago;
+        }
+      });
+
+      // Paginación
+      const totalItems = visibleMovs.length;
+      const totalPages = Math.ceil(totalItems / lmPageSize) || 1;
+      
+      if (lmCurrentPage > totalPages) lmCurrentPage = totalPages;
+      if (lmCurrentPage < 1) lmCurrentPage = 1;
+
+      const startIdx = (lmCurrentPage - 1) * lmPageSize;
+      const endIdx = Math.min(startIdx + lmPageSize, totalItems);
+      
+      const paginatedMovs = visibleMovs.slice(startIdx, endIdx);
+
+      if (paginatedMovs.length === 0) {
+        const colspanVal = isPalermo ? 5 : 6;
+        html += `<tr><td colspan="${colspanVal}" style="text-align:center;color:var(--g400);padding:20px">No hay movimientos en este período</td></tr>`;
+      } else {
+        paginatedMovs.forEach(m => {
+          const parts = m.fecha.split('-');
+          const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+
+          let badgeClass = '';
+          if (m.tipo === 'FACTURA') badgeClass = 'comp-factura';
+          else if (m.tipo === 'RECIBO') badgeClass = 'comp-recibo';
+          else if (m.tipo === 'NC') badgeClass = 'comp-nc';
+          else if (m.anulado) badgeClass = 'comp-anulado';
+
+          const typeLabel = m.anulado ? 'ANULADO' : m.tipo;
+
+          let menuHtml = '';
+          if (m.tipo === 'RECIBO' && !m.anulado) {
+            menuHtml = `
+              <div class="mw"><button class="db" onclick="openMenu(this)" style="font-size:16px">⋮</button>
+                <div class="dd">
+                  <div class="ddi dan" onclick="anularCobroMock('${m.doc}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/></svg>
+                    Anular cobro
+                  </div>
+                </div>
+              </div>
+            `;
+          }
+
+          let compLinkHtml = '';
+          if (m.tipo === 'FACTURA') {
+            compLinkHtml = `<span class="lm-comp-link" onclick="alert('Preview PDF: Factura ${m.doc}')">${m.doc} ↗</span>`;
+          } else if (m.tipo === 'NC') {
+            compLinkHtml = `<span class="lm-comp-link" onclick="alert('Preview PDF: Nota de Crédito ${m.doc}')">${m.doc} ↗</span>`;
+          } else if (m.tipo === 'RECIBO') {
+            compLinkHtml = `<span class="lm-comp-link" onclick="verReciboDetalle('${m.doc}')">${m.doc} ↗</span>`;
+          } else if (m.tipo === 'ND') {
+            compLinkHtml = `<span class="lm-comp-link" onclick="alert('Preview PDF: Nota de Débito ${m.doc}')">${m.doc} ↗</span>`;
+          }
+
+          const saldoCls = m.saldoDespues > 0 ? 'lm-saldo-pos' : 'lm-saldo-zero';
+          const saldoSign = m.saldoDespues < 0 ? '-' : '';
+          const saldoText = `<span class="${saldoCls}">${saldoSign}$${Math.abs(m.saldoDespues).toLocaleString('es-AR')}</span>`;
+
+          if (isPalermo) {
+            let importeText = '';
+            if (m.cargo > 0) {
+              importeText = `<span class="lm-debit">$${m.cargo.toLocaleString('es-AR')}</span>`;
+            } else if (m.pago > 0) {
+              importeText = `<span class="lm-credit">$${m.pago.toLocaleString('es-AR')}</span>`;
+            } else {
+              importeText = `<span style="color:var(--g200)">—</span>`;
+            }
+
+            html += `
+              <tr>
+                <td style="font-size:12px;color:var(--g400);white-space:nowrap">${formattedDate}</td>
+                <td>
+                  <div class="lm-comp">
+                    <span>${m.concepto}</span>
+                    ${m.anulado ? '<span class="bdg bdg-r" style="font-size:10px; margin-left:6px; padding: 1px 6px;">ANULADO</span>' : ''}
+                    ${compLinkHtml}
+                  </div>
+                </td>
+                <td style="text-align:right">${importeText}</td>
+                <td style="text-align:right">${saldoText}</td>
+                <td>${menuHtml}</td>
+              </tr>
+            `;
+          } else {
+            const debeText = m.cargo > 0 ? `<span class="lm-debit">$${m.cargo.toLocaleString('es-AR')}</span>` : '<span style="color:var(--g200)">—</span>';
+            const haberText = m.pago > 0 ? `<span class="lm-credit">$${m.pago.toLocaleString('es-AR')}</span>` : '<span style="color:var(--g200)">—</span>';
+
+            html += `
+              <tr>
+                <td style="font-size:12px;color:var(--g400);white-space:nowrap">${formattedDate}</td>
+                <td>
+                  <div class="lm-comp">
+                    <span>${m.concepto}</span>
+                    ${m.anulado ? '<span class="bdg bdg-r" style="font-size:10px; margin-left:6px; padding: 1px 6px;">ANULADO</span>' : ''}
+                    ${compLinkHtml}
+                  </div>
+                </td>
+                <td style="text-align:right">${debeText}</td>
+                <td style="text-align:right">${haberText}</td>
+                <td style="text-align:right">${saldoText}</td>
+                <td>${menuHtml}</td>
+              </tr>
+            `;
+          }
+        });
+      }
+
+      // 3. Fila de Saldo Posterior al Periodo (si hay fecha fin de filtro)
+      if (hastaVal) {
+        const parts = hastaVal.split('-');
+        if (parts.length === 3) {
+          const meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+          const day = parseInt(parts[2], 10);
+          const monthIndex = parseInt(parts[1], 10) - 1;
+          const year = parts[0];
+          const hastaDateStr = `${String(day).padStart(2, '0')}/${String(monthIndex + 1).padStart(2, '0')}/${year}`;
+
+          const saldoPosteriorCls = saldoPosterior > 0 ? 'lm-saldo-pos' : 'lm-saldo-zero';
+          const saldoPosteriorSign = saldoPosterior < 0 ? '-' : '';
+          const saldoPosteriorText = `<span class="${saldoPosteriorCls}">${saldoPosteriorSign}$${Math.abs(saldoPosterior).toLocaleString('es-AR')}</span>`;
+
+          if (isPalermo) {
+            html += `
+              <tr style="background:var(--g50); font-weight:600;">
+                <td style="font-size:12px;color:var(--g600);white-space:nowrap">${hastaDateStr}</td>
+                <td>
+                  <span style="color:var(--g800)">Saldo al cierre del per&iacute;odo</span>
+                </td>
+                <td style="text-align:right;color:var(--g200)">&mdash;</td>
+                <td style="text-align:right;">${saldoPosteriorText}</td>
+                <td></td>
+              </tr>
+            `;
+          } else {
+            html += `
+              <tr style="background:var(--g50); font-weight:600;">
+                <td style="font-size:12px;color:var(--g600);white-space:nowrap">${hastaDateStr}</td>
+                <td>
+                  <span style="color:var(--g800)">Saldo al cierre del per&iacute;odo</span>
+                </td>
+                <td style="text-align:right;color:var(--g200)">&mdash;</td>
+                <td style="text-align:right;color:var(--g200)">&mdash;</td>
+                <td style="text-align:right;">${saldoPosteriorText}</td>
+                <td></td>
+              </tr>
+            `;
+          }
+        }
+      }
+
+      // Actualizar el resumen destacado (Badges) con el saldo al cierre del periodo seleccionado
+      const finalPendiente = hastaVal ? saldoPosterior : currentTotal;
+      const finalDisponible = client.limite - finalPendiente;
+
+      document.getElementById('cl-det-pendiente').textContent = '$' + finalPendiente.toLocaleString('es-AR');
+      
+      const disponibleEl = document.getElementById('cl-det-disponible');
+      if (disponibleEl) {
+        disponibleEl.textContent = '$' + finalDisponible.toLocaleString('es-AR');
+      }
+
+      const badgeDisp = document.getElementById('cl-det-disponible-badge');
+      if (badgeDisp) {
+        if (finalDisponible < 0) {
+          badgeDisp.style.background = 'var(--red-s)';
+          badgeDisp.style.color = 'var(--red)';
+          badgeDisp.style.borderColor = 'rgba(226,75,74,.2)';
+        } else if (finalDisponible < 5000) {
+          badgeDisp.style.background = 'var(--amber-s)';
+          badgeDisp.style.color = 'var(--amber)';
+          badgeDisp.style.borderColor = 'rgba(186,117,23,.2)';
+        } else {
+          badgeDisp.style.background = 'var(--green-s)';
+          badgeDisp.style.color = 'var(--green)';
+          badgeDisp.style.borderColor = 'rgba(29,158,117,.2)';
+        }
+      }
+
+      // Si el período consultado no llega hasta la fecha actual, mostrar advertencia con saldo a hoy
+      const warningEl = document.getElementById('cl-det-warning-periodo');
+      if (warningEl) {
+        const todayISO = new Date().toISOString().split('T')[0];
+        if (hastaVal && hastaVal < todayISO) {
+          warningEl.style.display = 'flex';
+          const realHoyValEl = document.getElementById('cl-det-real-hoy-val');
+          if (realHoyValEl) {
+            realHoyValEl.textContent = '$' + currentTotal.toLocaleString('es-AR');
+          }
+        } else {
+          warningEl.style.display = 'none';
+        }
+      }
+
+      tbody.innerHTML = html;
+
+      // Actualizar info de paginación
+      const pagInfo = document.getElementById('lm-pag-info');
+      if (pagInfo) {
+        pagInfo.textContent = `Mostrando ${totalItems === 0 ? 0 : startIdx + 1}–${endIdx} de ${totalItems} movimientos`;
+      }
+      
+      const btnFirst = document.getElementById('lm-btn-first');
+      const btnPrev = document.getElementById('lm-btn-prev');
+      const btnNext = document.getElementById('lm-btn-next');
+      const btnLast = document.getElementById('lm-btn-last');
+      
+      if (btnFirst) btnFirst.disabled = lmCurrentPage === 1;
+      if (btnPrev) btnPrev.disabled = lmCurrentPage === 1;
+      if (btnNext) btnNext.disabled = lmCurrentPage === totalPages || totalItems === 0;
+      if (btnLast) btnLast.disabled = lmCurrentPage === totalPages || totalItems === 0;
+
+      // Estilo de botones deshabilitados
+      [btnFirst, btnPrev, btnNext, btnLast].forEach(btn => {
+        if (btn) {
+          if (btn.disabled) {
+            btn.style.opacity = '0.4';
+            btn.style.cursor = 'not-allowed';
+          } else {
+            btn.style.opacity = '1';
+            btn.style.cursor = 'pointer';
+          }
+        }
+      });
+    }
+
+    let currentDocToAnular = '';
+    function anularCobroMock(doc) {
+      currentDocToAnular = doc;
+      const docNumSpan = document.getElementById('anulacion-doc-num');
+      if (docNumSpan) docNumSpan.textContent = doc;
+      const motivoInput = document.getElementById('anulacion-motivo');
+      if (motivoInput) {
+        motivoInput.value = '';
+        motivoInput.closest('.fld-wrap')?.classList.remove('hv');
+      }
+      document.getElementById('mo-anulacion').classList.add('on');
+    }
+
+    function closeAnulacionModal() {
+      document.getElementById('mo-anulacion').classList.remove('on');
+    }
+
+    function closeAnulacionOutside(e) {
+      if (e.target === document.getElementById('mo-anulacion')) closeAnulacionModal();
+    }
+
+    function confirmarAnulacion() {
+      const motivoInput = document.getElementById('anulacion-motivo');
+      if (!motivoInput) return;
+      const motivo = motivoInput.value.trim();
+      if (!motivo) {
+        alert('El motivo de la anulación es obligatorio.');
+        return;
+      }
+
+      const client = CLIENTES_DATA[currentClient];
+      if (!client) return;
+
+      const doc = currentDocToAnular;
+      const mov = client.movimientos.find(m => m.doc === doc);
+      if (mov) {
+        // Mark original as anulado
+        mov.anulado = true;
+        mov.concepto = `${mov.concepto} (Anulado: ${motivo})`;
+
+        const valorPago = mov.pago;
+        
+        // Calculate new document number for the Debit Note (ND)
+        let nextDocNum = 1;
+        client.movimientos.forEach(m => {
+          if (m.tipo === 'ND') {
+            const num = parseInt(m.doc.replace('ND-2026-', ''), 10);
+            if (num >= nextDocNum) nextDocNum = num + 1;
+          }
+        });
+        const ndDocStr = 'ND-2026-' + String(nextDocNum).padStart(4, '0');
+
+        // Create the new ND (Nota de Débito) movement
+        const newMov = {
+          fecha: new Date().toISOString().split('T')[0],
+          tipo: 'ND',
+          concepto: `Anulación - Recibo #${doc}`,
+          cargo: valorPago,
+          pago: 0,
+          doc: ndDocStr,
+          motivoAnulacion: motivo
+        };
+        client.movimientos.push(newMov);
+
+        // Update client's pending balance (since a payment was cancelled, pending balance increases)
+        client.pendiente += valorPago;
+        client.disponible -= valorPago;
+
+        // Update header badges
+        document.getElementById('cl-det-pendiente').textContent = '$' + client.pendiente.toLocaleString('es-AR');
+        const disponibleEl = document.getElementById('cl-det-disponible');
+        disponibleEl.textContent = '$' + client.disponible.toLocaleString('es-AR');
+        
+        const badgeDisp = document.getElementById('cl-det-disponible-badge');
+        if (client.disponible < 0) {
+          badgeDisp.style.background = 'var(--red-s)';
+          badgeDisp.style.color = 'var(--red)';
+          badgeDisp.style.borderColor = 'rgba(226,75,74,.2)';
+        } else if (client.disponible < 5000) {
+          badgeDisp.style.background = 'var(--amber-s)';
+          badgeDisp.style.color = 'var(--amber)';
+          badgeDisp.style.borderColor = 'rgba(186,117,23,.2)';
+        } else {
+          badgeDisp.style.background = 'var(--green-s)';
+          badgeDisp.style.color = 'var(--green)';
+          badgeDisp.style.borderColor = 'rgba(29,158,117,.2)';
+        }
+
+        // Update row in pg-cc-resumen
+        const tableRows = document.querySelectorAll('#pg-cc-resumen tbody tr');
+        tableRows.forEach(row => {
+          const nameDiv = row.querySelector('td:nth-child(2) div:first-child');
+          if (nameDiv && nameDiv.textContent.trim() === currentClient) {
+            const balanceSpan = row.querySelector('td:nth-child(4) span');
+            if (balanceSpan) {
+              balanceSpan.textContent = '$' + client.pendiente.toLocaleString('es-AR');
+              balanceSpan.className = client.pendiente <= 0 ? 'bdg bdg-g' : 'bdg bdg-r';
+            }
+            const disponibleTd = row.querySelector('td:nth-child(5)');
+            if (disponibleTd) {
+              disponibleTd.textContent = '$' + client.disponible.toLocaleString('es-AR');
+              if (client.disponible < 0) {
+                disponibleTd.style.color = 'var(--red)';
+              } else if (client.disponible < 5000) {
+                disponibleTd.style.color = 'var(--amber)';
+              } else {
+                disponibleTd.style.color = 'var(--green)';
+              }
+            }
+          }
+        });
+
+        renderLibroMayor();
+        closeAnulacionModal();
+
+        // Show success toast
+        const banner = document.createElement('div');
+        banner.style.cssText = 'position:fixed;top:60px;right:24px;background:#e24b4a;color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);animation:slideInRight .2s ease';
+        banner.textContent = `✓ Recibo ${doc} anulado con éxito. Motivo: ${motivo}`;
+        document.body.appendChild(banner);
+        setTimeout(() => banner.remove(), 3200);
+      }
+    }
+
+    var calCurrentDate = new Date();
+    var calStartDate = null;
+    var calEndDate = null;
+    var monthsList = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+    function initCalendar(isMon) {
+      var container = document.querySelector('#fecha-filter-dropdown .cal-days-grid');
+      var title = document.querySelector('#fecha-filter-dropdown .cal-month-title');
+      var rangeText = document.querySelector('#fecha-filter-dropdown .cal-range-text');
+      
+      if (!container) return;
+      title.textContent = monthsList[calCurrentDate.getMonth()] + ' ' + calCurrentDate.getFullYear();
+      container.innerHTML = '';
+
+      var year = calCurrentDate.getFullYear();
+      var month = calCurrentDate.getMonth();
+      var firstDay = new Date(year, month, 1).getDay();
+      var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      for (var i = 0; i < firstDay; i++) {
+        var cell = document.createElement('div');
+        cell.className = 'cal-day-cell empty';
+        container.appendChild(cell);
+      }
+
+      var today = new Date();
+      for (var day = 1; day <= daysInMonth; day++) {
+        var cell = document.createElement('div');
+        cell.className = 'cal-day-cell';
+        cell.textContent = day;
+        
+        var cellDate = new Date(year, month, day);
+        if (cellDate.getFullYear() === today.getFullYear() &&
+            cellDate.getMonth() === today.getMonth() &&
+            cellDate.getDate() === today.getDate()) {
+          cell.classList.add('today');
+        }
+
+        if (calStartDate && cellDate.getTime() === calStartDate.getTime()) {
+          cell.classList.add('start-date');
+        } else if (calEndDate && cellDate.getTime() === calEndDate.getTime()) {
+          cell.classList.add('end-date');
+        } else if (calStartDate && calEndDate && cellDate > calStartDate && cellDate < calEndDate) {
+          cell.classList.add('in-range');
+        }
+
+        (function(d) {
+          cell.onclick = function(e) {
+            e.stopPropagation();
+            onCalDayClick(d, isMon);
+          };
+        })(cellDate);
+
+        container.appendChild(cell);
+      }
+
+      if (calStartDate && calEndDate) {
+        rangeText.textContent = formatDateString(calStartDate) + ' al ' + formatDateString(calEndDate);
+      } else if (calStartDate) {
+        rangeText.textContent = 'Desde: ' + formatDateString(calStartDate);
+      } else {
+        rangeText.textContent = 'Seleccione rango';
+      }
+    }
+
+    function onCalDayClick(date, isMon) {
+      if (!calStartDate || (calStartDate && calEndDate)) {
+        calStartDate = date;
+        calEndDate = null;
+      } else if (calStartDate && !calEndDate) {
+        if (date < calStartDate) {
+          calStartDate = date;
+        } else {
+          calEndDate = date;
+        }
+      }
+      initCalendar(isMon);
+    }
+
+    function formatDateString(d) {
+      var dd = String(d.getDate()).padStart(2, '0');
+      var mm = String(d.getMonth() + 1).padStart(2, '0');
+      return dd + '/' + mm + '/' + d.getFullYear();
+    }
+
+    function formatDateISO(d) {
+      if (!d) return '';
+      var yyyy = d.getFullYear();
+      var mm = String(d.getMonth() + 1).padStart(2, '0');
+      var dd = String(d.getDate()).padStart(2, '0');
+      return yyyy + '-' + mm + '-' + dd;
+    }
+
+    function changeCalMonth(dir, isMon, e) {
+      if (e) e.stopPropagation();
+      calCurrentDate.setMonth(calCurrentDate.getMonth() + dir);
+      initCalendar(isMon);
+    }
+
+    function applyCalRangeMon(e) {
+      if (e) e.stopPropagation();
+      var inputDesde = document.getElementById('filter-desde');
+      var inputHasta = document.getElementById('filter-hasta');
+      if (inputDesde) inputDesde.value = formatDateISO(calStartDate);
+      if (inputHasta) inputHasta.value = formatDateISO(calEndDate);
+      
+      updateDateFilterBtnLabelMon();
+      renderLibroMayor(true);
+      var f = document.getElementById('fecha-filter-dropdown');
+      if (f) f.classList.remove('on');
+    }
+
+    function clearCalRangeMon(e) {
+      if (e) e.stopPropagation();
+      calStartDate = null;
+      calEndDate = null;
+      
+      var inputDesde = document.getElementById('filter-desde');
+      var inputHasta = document.getElementById('filter-hasta');
+      if (inputDesde) inputDesde.value = '';
+      if (inputHasta) inputHasta.value = '';
+      
+      initCalendar(true);
+      updateDateFilterBtnLabelMon();
+      renderLibroMayor(true);
+      var f = document.getElementById('fecha-filter-dropdown');
+      if (f) f.classList.remove('on');
+    }
+
+    function updateDateFilterBtnLabelMon() {
+      var btn = document.getElementById('fecha-filter-btn');
+      if (!btn) return;
+      var desde = document.getElementById('filter-desde') ? document.getElementById('filter-desde').value : '';
+      var hasta = document.getElementById('filter-hasta') ? document.getElementById('filter-hasta').value : '';
+      
+      if (!desde && !hasta) {
+        btn.textContent = '📅 Fecha ▾';
+        btn.classList.remove('act');
+      } else {
+        var dStr = desde ? formatShortDateMon(desde) : '...';
+        var hStr = hasta ? formatShortDateMon(hasta) : '...';
+        btn.textContent = '📅 ' + dStr + ' al ' + hStr + ' ▾';
+        btn.classList.add('act');
+      }
+    }
+
+    function formatShortDateMon(dateStr) {
+      var parts = dateStr.split('-');
+      if (parts.length === 3) {
+        return parts[2] + '/' + parts[1];
+      }
+      return dateStr;
+    }
+
+    // ── INIT DATE FILTERS ──
+    (function initDateFilters() {
+      var inputDesde = document.getElementById('filter-desde');
+      var inputHasta = document.getElementById('filter-hasta');
+      
+      var today = new Date();
+      today.setHours(0,0,0,0);
+      var past30 = new Date();
+      past30.setDate(today.getDate() - 30);
+      past30.setHours(0,0,0,0);
+      
+      calStartDate = past30;
+      calEndDate = today;
+      
+      if (inputDesde) inputDesde.value = formatDateISO(past30);
+      if (inputHasta) inputHasta.value = formatDateISO(today);
+      
+      initCalendar(true);
+      updateDateFilterBtnLabelMon();
+    })();
+
+    renderLibroMayor();
+
+    // ══════════════════════════════════════════════════════════════════
+    // MÓDULO CHEQUES DE TERCEROS
+    // ══════════════════════════════════════════════════════════════════
+    function money(n) {
+      const v = Math.round(n || 0);
+      return (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('es-AR');
+    }
+    function parseMoneyInput(str) {
+      if (!str) return 0;
+      const clean = String(str).replace(/[^0-9.]/g, '');
+      return parseFloat(clean) || 0;
+    }
+    function fmtFechaCorta(iso) {
+      if (!iso) return '—';
+      const p = iso.split('-');
+      return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : iso;
+    }
+    function diasParaVencimiento(iso) {
+      if (!iso) return 0;
+      const hoy = new Date(); hoy.setHours(0,0,0,0);
+      const venc = new Date(iso + 'T00:00:00');
+      return Math.round((venc - hoy) / 86400000);
+    }
+
+    let chqIdCounter = 8;
+    const CHEQUES_DATA = [
+      {
+        id: 'CHQ-0001', numCheque: '00418239', serie: 'A', banco: '027 - Banco Macro',
+        titular: 'Agroindustrias S.A.', clienteAsociado: 'Distribuidora El Sol',
+        origen: 'Cheque de un tercero (Entregado por cliente)', tipoCheque: 'Físico (papel)', orden: 'A la orden',
+        fechaEmision: '2026-05-20', fechaVencimiento: '2026-06-25', monto: 200000,
+        estado: 'En cartera', deposito: 'Cartera Cheques Físicos (En Custodia)'
+      },
+      {
+        id: 'CHQ-0002', numCheque: '0019284', serie: 'B', banco: '007 - Banco Galicia',
+        titular: 'Distribuidora El Sol', clienteAsociado: 'Distribuidora El Sol',
+        origen: 'Cheque propio del cliente', tipoCheque: 'Electrónico (e-cheq)', orden: 'A la orden',
+        fechaEmision: '2026-05-15', fechaVencimiento: '2026-06-15', monto: 65000,
+        estado: 'Depositado', deposito: 'Banco Nación — Cta. Cte. N° 182-391/0', fechaDeposito: '2026-06-01'
+      },
+      {
+        id: 'CHQ-0003', numCheque: '00552310', serie: 'C', banco: '011 - Banco de la Nación Argentina',
+        titular: 'Comercial del Norte SRL', clienteAsociado: 'Supermercado Norte',
+        origen: 'Cheque de un tercero (Entregado por cliente)', tipoCheque: 'Físico (papel)', orden: 'A la orden',
+        fechaEmision: '2026-05-10', fechaVencimiento: '2026-06-05', monto: 350000,
+        estado: 'Rechazado', deposito: '—', fechaDeposito: '2026-06-01',
+        fechaRechazo: '2026-06-08', motivoRechazo: 'Falta de fondos', gastoAdmin: 3500,
+        observaciones: 'Cliente notificado telefónicamente.', ndDoc: 'ND-2026-0001'
+      },
+      {
+        id: 'CHQ-0004', numCheque: '00099211', serie: 'A', banco: '017 - Banco BBVA Argentina',
+        titular: 'Kiosco Central', clienteAsociado: 'Kiosco Central',
+        origen: 'Cheque propio del cliente', tipoCheque: 'Físico (papel)', orden: 'A la orden',
+        fechaEmision: '2026-05-25', fechaVencimiento: '2026-07-01', monto: 45000,
+        estado: 'En cartera', deposito: 'Cartera Cheques Físicos (En Custodia)'
+      },
+      {
+        id: 'CHQ-0005', numCheque: '00071122', serie: 'B', banco: '072 - Banco Santander Argentina',
+        titular: 'Snacks & Co.', clienteAsociado: 'Snacks & Co.',
+        origen: 'Cheque propio del cliente', tipoCheque: 'Físico (papel)', orden: 'A la orden',
+        fechaEmision: '2026-05-18', fechaVencimiento: '2026-06-10', monto: 92400,
+        estado: 'Canjeado', deposito: 'Caja Valores a Depositar', fechaCanje: '2026-05-30', gastoCanje: 1200
+      },
+      {
+        id: 'CHQ-0006', numCheque: '00318475', serie: 'D', banco: '014 - Banco Provincia de Bs. As.',
+        titular: 'Distribuidora Norte SA', clienteAsociado: 'Heladería Palermo',
+        origen: 'Cheque de un tercero (Entregado por cliente)', tipoCheque: 'Físico (papel)', orden: 'A la orden',
+        fechaEmision: '2026-05-22', fechaVencimiento: '2026-06-28', monto: 65000,
+        estado: 'Entregado a terceros', deposito: '—', proveedor: 'Molinos del Sur S.A.',
+        concepto: 'Pago a proveedores — Mercadería', fechaEntrega: '2026-06-05'
+      },
+      {
+        id: 'CHQ-0007', numCheque: '00184455', serie: 'A', banco: '027 - Banco Macro',
+        titular: 'Almacén Don Pedro', clienteAsociado: 'Almacén Don Pedro',
+        origen: 'Cheque propio del cliente', tipoCheque: 'Físico (papel)', orden: 'A la orden',
+        fechaEmision: '2026-06-01', fechaVencimiento: '2026-07-15', monto: 30000,
+        estado: 'En cartera', deposito: 'Cartera Cheques Físicos (En Custodia)'
+      },
+      {
+        id: 'CHQ-0008', numCheque: '00500213', serie: 'C', banco: '259 - HSBC Bank Argentina',
+        titular: 'Distribuidora El Sol', clienteAsociado: 'Distribuidora El Sol',
+        origen: 'Cheque propio del cliente', tipoCheque: 'Electrónico (e-cheq)', orden: 'A la orden',
+        fechaEmision: '2026-06-03', fechaVencimiento: '2026-06-20', monto: 55000,
+        estado: 'Depositado', deposito: 'Banco Galicia — Cta. Cte. N° 401-992/3', fechaDeposito: '2026-06-10'
+      }
+    ];
+
+    function chqBadgeHtml(estado) {
+      const map = {
+        'En cartera': 'bdg-p',
+        'Depositado': 'bdg-b',
+        'Canjeado': 'bdg-g',
+        'Entregado a terceros': 'bdg-gr',
+        'Rechazado': 'bdg-r'
+      };
+      return `<span class="bdg ${map[estado] || 'bdg-gr'}">${estado}</span>`;
+    }
+
+    function registrarChequeEnCartera(chequeData, clienteNombre) {
+      chqIdCounter++;
+      CHEQUES_DATA.push({
+        id: 'CHQ-' + String(chqIdCounter).padStart(4, '0'),
+        numCheque: chequeData.numCheque,
+        serie: chequeData.serie || '',
+        banco: chequeData.banco,
+        titular: chequeData.titular || clienteNombre,
+        clienteAsociado: clienteNombre,
+        origen: chequeData.origen,
+        tipoCheque: chequeData.tipoCheque,
+        orden: chequeData.orden || 'A la orden',
+        fechaEmision: chequeData.fechaEmision,
+        fechaVencimiento: chequeData.fechaVencimiento,
+        monto: chequeData.importe,
+        estado: 'En cartera',
+        deposito: chequeData.deposito || 'Cartera Cheques Físicos (En Custodia)'
+      });
+    }
+
+    function renderChequesInforme() {
+      const searchEl = document.getElementById('chq-search');
+      const estadoEl = document.getElementById('chq-filter-estado');
+      const search = searchEl ? searchEl.value.trim().toLowerCase() : '';
+      const estadoFiltro = estadoEl ? estadoEl.value : 'Todos';
+
+      let cartera = 0, carteraN = 0, depositado = 0, depositadoN = 0, salida = 0, salidaN = 0, rechazado = 0, rechazadoN = 0;
+      CHEQUES_DATA.forEach(c => {
+        if (c.estado === 'En cartera') { cartera += c.monto; carteraN++; }
+        else if (c.estado === 'Depositado') { depositado += c.monto; depositadoN++; }
+        else if (c.estado === 'Canjeado' || c.estado === 'Entregado a terceros') { salida += c.monto; salidaN++; }
+        else if (c.estado === 'Rechazado') { rechazado += c.monto; rechazadoN++; }
+      });
+      document.getElementById('chq-kpi-cartera').textContent = money(cartera);
+      document.getElementById('chq-kpi-cartera-sub').textContent = carteraN + ' cheque' + (carteraN !== 1 ? 's' : '');
+      document.getElementById('chq-kpi-depositado').textContent = money(depositado);
+      document.getElementById('chq-kpi-depositado-sub').textContent = depositadoN + ' cheque' + (depositadoN !== 1 ? 's' : '');
+      document.getElementById('chq-kpi-salida').textContent = money(salida);
+      document.getElementById('chq-kpi-salida-sub').textContent = salidaN + ' cheque' + (salidaN !== 1 ? 's' : '');
+      document.getElementById('chq-kpi-rechazado').textContent = money(rechazado);
+      document.getElementById('chq-kpi-rechazado-sub').textContent = rechazadoN + ' cheque' + (rechazadoN !== 1 ? 's' : '');
+
+      let lista = CHEQUES_DATA.filter(c => {
+        if (estadoFiltro !== 'Todos' && c.estado !== estadoFiltro) return false;
+        if (search) {
+          const hay = (c.numCheque + ' ' + c.titular + ' ' + c.banco + ' ' + c.clienteAsociado).toLowerCase();
+          if (!hay.includes(search)) return false;
+        }
+        return true;
+      });
+      lista = lista.slice().sort((a, b) => a.fechaVencimiento.localeCompare(b.fechaVencimiento));
+
+      const tbody = document.getElementById('chq-tbody');
+      if (!lista.length) {
+        tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--g400);padding:24px">No se encontraron cheques con estos filtros.</td></tr>`;
+      } else {
+        tbody.innerHTML = lista.map(c => {
+          let acciones = `<button class="btn bo bsm" onclick="openChqDetalleModal('${c.id}')">Ver detalle</button>`;
+          if (c.estado === 'En cartera') {
+            acciones += ` <button class="btn bsm" style="background:var(--accent-soft);color:var(--accent);border:1px solid rgba(110,89,238,.2)" onclick="irASalidaConCheque('${c.id}')">Salida</button>`;
+          } else if (c.estado === 'Depositado') {
+            acciones += ` <button class="btn bsm" style="background:var(--red-s);color:var(--red);border:1px solid rgba(226,75,74,.2)" onclick="irADevolucionConCheque('${c.id}')">Rechazo</button>`;
+          }
+          return `
+            <tr>
+              <td style="font-family:monospace;font-weight:600">${c.serie ? c.serie + ' ' : ''}${c.numCheque}</td>
+              <td style="font-size:12.5px">${c.banco}</td>
+              <td>${c.titular}</td>
+              <td style="font-size:12.5px;color:var(--g600)">${c.clienteAsociado}</td>
+              <td style="font-size:12px;color:var(--g400)">${fmtFechaCorta(c.fechaEmision)}</td>
+              <td style="font-size:12px">${fmtFechaCorta(c.fechaVencimiento)}</td>
+              <td style="text-align:right;font-family:monospace;font-weight:600">${money(c.monto)}</td>
+              <td style="font-size:11.5px;color:var(--g600)">${c.deposito || '—'}</td>
+              <td>${chqBadgeHtml(c.estado)}</td>
+              <td><div style="display:flex;gap:5px;flex-wrap:wrap">${acciones}</div></td>
+            </tr>
+          `;
+        }).join('');
+      }
+      const pagInfo = document.getElementById('chq-pag-info');
+      if (pagInfo) pagInfo.textContent = `Mostrando ${lista.length} de ${CHEQUES_DATA.length} cheques`;
+    }
+
+    function openChqDetalleModal(id) {
+      const c = CHEQUES_DATA.find(x => x.id === id);
+      if (!c) return;
+      document.getElementById('chq-detalle-title').textContent = `Cheque N° ${c.numCheque}`;
+      let extra = '';
+      if (c.estado === 'Rechazado') {
+        extra = `
+          <div style="margin-top:14px; background:var(--red-s); border:1px solid rgba(226,75,74,.2); border-radius:6px; padding:12px 14px;">
+            <div style="font-size:11px; font-weight:700; color:var(--red); text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">Datos de la devolución</div>
+            <div style="font-size:12.5px; color:var(--g800); line-height:1.7;">
+              Fecha de rechazo: <strong>${fmtFechaCorta(c.fechaRechazo)}</strong><br/>
+              Motivo: <strong>${c.motivoRechazo || '—'}</strong><br/>
+              Gasto administrativo: <strong>${money(c.gastoAdmin || 0)}</strong><br/>
+              ${c.ndDoc ? `Nota de Débito generada: <strong>${c.ndDoc}</strong><br/>` : ''}
+              ${c.observaciones ? `Observaciones: ${c.observaciones}` : ''}
+            </div>
+          </div>
+        `;
+      } else if (c.estado === 'Canjeado') {
+        extra = `
+          <div style="margin-top:14px; background:var(--green-s); border:1px solid rgba(29,158,117,.2); border-radius:6px; padding:12px 14px; font-size:12.5px;">
+            Canjeado el <strong>${fmtFechaCorta(c.fechaCanje)}</strong> · Gasto administrativo: <strong>${money(c.gastoCanje || 0)}</strong>
+          </div>
+        `;
+      } else if (c.estado === 'Entregado a terceros') {
+        extra = `
+          <div style="margin-top:14px; background:var(--g100); border:1px solid var(--g200); border-radius:6px; padding:12px 14px; font-size:12.5px;">
+            Entregado a <strong>${c.proveedor || '—'}</strong> el <strong>${fmtFechaCorta(c.fechaEntrega)}</strong><br/>Concepto: ${c.concepto || '—'}
+          </div>
+        `;
+      } else if (c.estado === 'Depositado') {
+        extra = `
+          <div style="margin-top:14px; background:var(--blue-s); border:1px solid rgba(60,90,154,.2); border-radius:6px; padding:12px 14px; font-size:12.5px; color:var(--blue);">
+            Depositado el <strong>${fmtFechaCorta(c.fechaDeposito)}</strong> en <strong>${c.deposito}</strong>
+          </div>
+        `;
+      }
+      document.getElementById('chq-detalle-body').innerHTML = `
+        <div style="background:var(--g50); border:1px solid var(--g200); border-radius:8px; padding:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div><div style="font-size:11px;color:var(--g400);text-transform:uppercase;font-weight:700">Banco emisor</div><div style="font-size:13px;font-weight:600;margin-top:2px">${c.banco}</div></div>
+          <div><div style="font-size:11px;color:var(--g400);text-transform:uppercase;font-weight:700">N° de cheque</div><div style="font-size:13px;font-weight:600;margin-top:2px;font-family:monospace">${c.serie ? c.serie + ' ' : ''}${c.numCheque}</div></div>
+          <div><div style="font-size:11px;color:var(--g400);text-transform:uppercase;font-weight:700">Titular / Librador</div><div style="font-size:13px;font-weight:600;margin-top:2px">${c.titular}</div></div>
+          <div><div style="font-size:11px;color:var(--g400);text-transform:uppercase;font-weight:700">Cliente (CC) asociado</div><div style="font-size:13px;font-weight:600;margin-top:2px">${c.clienteAsociado}</div></div>
+          <div><div style="font-size:11px;color:var(--g400);text-transform:uppercase;font-weight:700">Origen / Formato</div><div style="font-size:12.5px;margin-top:2px">${c.origen}<br/>${c.tipoCheque} · ${c.orden}</div></div>
+          <div><div style="font-size:11px;color:var(--g400);text-transform:uppercase;font-weight:700">Emisión / Vencimiento</div><div style="font-size:12.5px;margin-top:2px">${fmtFechaCorta(c.fechaEmision)} → <strong>${fmtFechaCorta(c.fechaVencimiento)}</strong></div></div>
+        </div>
+        <div style="background:linear-gradient(135deg, var(--navy) 0%, #1e1045 100%); color:#fff; border-radius:8px; padding:16px 20px; display:flex; justify-content:space-between; align-items:center; margin-top:14px;">
+          <div>
+            <span style="font-size:12px; color:rgba(255,255,255,.7); text-transform:uppercase; letter-spacing:0.5px;">Importe del cheque</span>
+            <div style="font-size:22px; font-weight:800; color:#fff; margin-top:2px;">${money(c.monto)}</div>
+          </div>
+          ${chqBadgeHtml(c.estado)}
+        </div>
+        ${extra}
+      `;
+      document.getElementById('mo-cheque-detalle').classList.add('on');
+    }
+    function closeChqDetalleModal() { document.getElementById('mo-cheque-detalle')?.classList.remove('on'); }
+    function closeChqDetalleOutside(e) { if (e.target === document.getElementById('mo-cheque-detalle')) closeChqDetalleModal(); }
+
+    // ── SALIDA DE CHEQUES ────────────────────────────────────────────
+    let chqSalidaPreselectId = null;
+    let chqSelectedIds = new Set();
+    let chqDestinoActivo = 'deposito';
+
+    function irASalidaConCheque(id) {
+      chqSalidaPreselectId = id;
+      go('cheques-salida');
+    }
+
+    function initSalidaCheques() {
+      chqSelectedIds = new Set();
+      chqDestinoActivo = 'deposito';
+      document.querySelectorAll('#pg-cheques-salida .tab').forEach(t => t.classList.remove('act'));
+      document.getElementById('chq-tab-deposito').classList.add('act');
+      document.querySelectorAll('#pg-cheques-salida .tb-body').forEach(t => t.classList.remove('on'));
+      document.getElementById('chq-tb-deposito').classList.add('on');
+
+      const today = new Date().toISOString().split('T')[0];
+      ['chq-dep-fecha', 'chq-canje-fecha', 'chq-terc-fecha'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = today;
+      });
+      const gastoEl = document.getElementById('chq-canje-gasto');
+      if (gastoEl) gastoEl.value = '';
+
+      if (chqSalidaPreselectId) {
+        chqSelectedIds.add(chqSalidaPreselectId);
+        chqSalidaPreselectId = null;
+      }
+
+      renderChqSalidaList();
+      updateChqSalidaResumen();
+    }
+
+    function renderChqSalidaList() {
+      const list = document.getElementById('chq-sal-list');
+      const enCartera = CHEQUES_DATA.filter(c => c.estado === 'En cartera');
+      if (!enCartera.length) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-state-title">No hay cheques en cartera</div><div class="empty-state-sub">Todos los cheques ya tienen un destino asignado.</div></div>`;
+        return;
+      }
+      list.innerHTML = enCartera.map(c => {
+        const dias = diasParaVencimiento(c.fechaVencimiento);
+        const diasTxt = dias < 0 ? `<span style="color:var(--red);font-weight:600">Vencido</span>` : dias <= 7 ? `<span style="color:var(--amber);font-weight:600">${dias} días</span>` : `${dias} días`;
+        const checked = chqSelectedIds.has(c.id) ? 'checked' : '';
+        return `
+          <div class="chq-sel-row">
+            <div class="fac-chk"><input type="checkbox" class="chq-sel-chk" data-id="${c.id}" ${checked} onchange="toggleChqSelItem('${c.id}', this.checked)" style="width:16px;height:16px;accent-color:var(--accent);cursor:pointer" /></div>
+            <div class="chq-sel-data">
+              <span><strong style="font-size:12.5px;font-family:monospace">${c.serie ? c.serie + ' ' : ''}${c.numCheque}</strong><br/><span style="font-size:11px;color:var(--g400)">${c.banco}</span></span>
+              <span style="font-size:12.5px">${c.titular}</span>
+              <span style="font-size:12px">${fmtFechaCorta(c.fechaVencimiento)}</span>
+              <span style="font-size:12px">${diasTxt}</span>
+              <span style="text-align:right;font-family:monospace;font-weight:600">${money(c.monto)}</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleAllSalida(cb) {
+      const checks = document.querySelectorAll('.chq-sel-chk');
+      checks.forEach(c => {
+        c.checked = cb.checked;
+        if (cb.checked) chqSelectedIds.add(c.dataset.id); else chqSelectedIds.delete(c.dataset.id);
+      });
+      updateChqSalidaResumen();
+    }
+
+    function toggleChqSelItem(id, checked) {
+      if (checked) chqSelectedIds.add(id); else chqSelectedIds.delete(id);
+      updateChqSalidaResumen();
+    }
+
+    function updateChqSalidaResumen() {
+      const seleccionados = CHEQUES_DATA.filter(c => chqSelectedIds.has(c.id));
+      const total = seleccionados.reduce((s, c) => s + c.monto, 0);
+      const countEl = document.getElementById('chq-sel-count');
+      const totalEl = document.getElementById('chq-sel-total');
+      const bar = document.getElementById('chq-sel-bar');
+      if (countEl) countEl.textContent = seleccionados.length + ' cheque' + (seleccionados.length !== 1 ? 's' : '') + ' seleccionado' + (seleccionados.length !== 1 ? 's' : '');
+      let totalTxt = 'Total: ' + money(total);
+      if (chqDestinoActivo === 'canje') {
+        const gasto = parseMoneyInput(document.getElementById('chq-canje-gasto')?.value);
+        if (gasto > 0) totalTxt += ' · Neto a acreditar: ' + money(total - gasto);
+      }
+      if (totalEl) totalEl.textContent = totalTxt;
+      if (bar) bar.classList.toggle('on', seleccionados.length > 0);
+      const chkAll = document.getElementById('chq-sal-chk-all');
+      if (chkAll) {
+        const totalChecks = document.querySelectorAll('.chq-sel-chk').length;
+        chkAll.checked = totalChecks > 0 && seleccionados.length === totalChecks;
+        chkAll.indeterminate = seleccionados.length > 0 && seleccionados.length < totalChecks;
+      }
+    }
+
+    function switchChqDestino(tipo) {
+      chqDestinoActivo = tipo;
+      document.querySelectorAll('#pg-cheques-salida .tab').forEach(t => t.classList.remove('act'));
+      document.querySelectorAll('#pg-cheques-salida .tb-body').forEach(t => t.classList.remove('on'));
+      document.getElementById('chq-tab-' + tipo).classList.add('act');
+      document.getElementById('chq-tb-' + tipo).classList.add('on');
+      updateChqSalidaResumen();
+    }
+
+    function confirmarSalidaCheques() {
+      const seleccionados = CHEQUES_DATA.filter(c => chqSelectedIds.has(c.id));
+      if (!seleccionados.length) {
+        alert('Seleccioná al menos un cheque de la cartera para registrar su salida.');
+        return;
+      }
+
+      let nuevoEstado = '', destinoTxt = '', destinoUbicacion = '';
+
+      if (chqDestinoActivo === 'deposito') {
+        const cuenta = document.getElementById('chq-dep-cuenta').value;
+        const fecha = document.getElementById('chq-dep-fecha').value;
+        if (!fecha) { alert('Ingresá la fecha de depósito.'); return; }
+        nuevoEstado = 'Depositado';
+        destinoUbicacion = cuenta;
+        seleccionados.forEach(c => { c.fechaDeposito = fecha; });
+        destinoTxt = `depositados en ${cuenta}`;
+      } else if (chqDestinoActivo === 'canje') {
+        const caja = document.getElementById('chq-canje-caja').value;
+        const fecha = document.getElementById('chq-canje-fecha').value;
+        const gasto = parseMoneyInput(document.getElementById('chq-canje-gasto').value);
+        if (!fecha) { alert('Ingresá la fecha del canje.'); return; }
+        nuevoEstado = 'Canjeado';
+        destinoUbicacion = caja;
+        seleccionados.forEach(c => { c.fechaCanje = fecha; c.gastoCanje = gasto; });
+        destinoTxt = `canjeados por efectivo en ${caja}` + (gasto > 0 ? ` (comisión ${money(gasto)})` : '');
+      } else {
+        const proveedor = document.getElementById('chq-terc-proveedor').value;
+        const concepto = document.getElementById('chq-terc-concepto').value;
+        const fecha = document.getElementById('chq-terc-fecha').value;
+        if (!fecha) { alert('Ingresá la fecha de entrega.'); return; }
+        nuevoEstado = 'Entregado a terceros';
+        destinoUbicacion = '—';
+        seleccionados.forEach(c => { c.proveedor = proveedor; c.concepto = concepto; c.fechaEntrega = fecha; });
+        destinoTxt = `entregados a ${proveedor} (${concepto})`;
+      }
+
+      seleccionados.forEach(c => {
+        c.estado = nuevoEstado;
+        c.deposito = destinoUbicacion;
+      });
+
+      const totalSalida = seleccionados.reduce((s, c) => s + c.monto, 0);
+
+      go('cheques-informe');
+
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;top:60px;right:24px;background:#1d9e75;color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);animation:slideInRight .2s ease;max-width:340px';
+      banner.textContent = `✓ ${seleccionados.length} cheque(s) por ${money(totalSalida)} ${destinoTxt}.`;
+      document.body.appendChild(banner);
+      setTimeout(() => banner.remove(), 3800);
+    }
+
+    // ── DEVOLUCIÓN DE CHEQUE (RECHAZADOS) ────────────────────────────
+    let chqDevPreselectId = null;
+
+    function irADevolucionConCheque(id) {
+      chqDevPreselectId = id;
+      go('cheques-devolucion');
+    }
+
+    function initDevolucionCheque() {
+      const sel = document.getElementById('chq-dev-select');
+      const elegibles = CHEQUES_DATA.filter(c => c.estado === 'Depositado');
+      sel.innerHTML = '<option value="">Seleccionar…</option>' + elegibles.map(c =>
+        `<option value="${c.id}">${c.serie ? c.serie + ' ' : ''}${c.numCheque} — ${c.banco} — ${c.titular} — ${money(c.monto)}</option>`
+      ).join('');
+      sel.closest('.fld-wrap')?.classList.toggle('hv', !!sel.value);
+
+      const fechaEl = document.getElementById('chq-dev-fecha');
+      if (fechaEl) fechaEl.value = new Date().toISOString().split('T')[0];
+      const obsEl = document.getElementById('chq-dev-obs');
+      if (obsEl) obsEl.value = '';
+      const gastoEl = document.getElementById('chq-dev-gasto');
+      if (gastoEl) gastoEl.value = '';
+
+      document.getElementById('chq-dev-resumen').style.display = 'none';
+      document.getElementById('chq-dev-datos').style.display = 'none';
+
+      if (chqDevPreselectId && elegibles.some(c => c.id === chqDevPreselectId)) {
+        sel.value = chqDevPreselectId;
+        chqDevPreselectId = null;
+        onChqDevSelect();
+      } else {
+        chqDevPreselectId = null;
+      }
+    }
+
+    function onChqDevSelect() {
+      const sel = document.getElementById('chq-dev-select');
+      const id = sel.value;
+      sel.closest('.fld-wrap')?.classList.toggle('hv', !!id);
+      const resumenEl = document.getElementById('chq-dev-resumen');
+      const datosEl = document.getElementById('chq-dev-datos');
+      if (!id) {
+        resumenEl.style.display = 'none';
+        datosEl.style.display = 'none';
+        return;
+      }
+      const c = CHEQUES_DATA.find(x => x.id === id);
+      if (!c) return;
+
+      resumenEl.style.display = 'block';
+      resumenEl.innerHTML = `
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+          <div><div style="font-size:10.5px;color:var(--g400);text-transform:uppercase;font-weight:700">Banco / N° Cheque</div><div style="font-size:13px;font-weight:600;margin-top:2px">${c.banco}<br/><span style="font-family:monospace">${c.serie ? c.serie + ' ' : ''}${c.numCheque}</span></div></div>
+          <div><div style="font-size:10.5px;color:var(--g400);text-transform:uppercase;font-weight:700">Titular / Cliente (CC)</div><div style="font-size:13px;font-weight:600;margin-top:2px">${c.titular}<br/><span style="color:var(--g600);font-weight:400">${c.clienteAsociado}</span></div></div>
+          <div><div style="font-size:10.5px;color:var(--g400);text-transform:uppercase;font-weight:700">Importe / Depositado el</div><div style="font-size:13px;font-weight:700;margin-top:2px;color:var(--navy)">${money(c.monto)}<br/><span style="color:var(--g600);font-weight:400;font-size:12px">${fmtFechaCorta(c.fechaDeposito)}</span></div></div>
+        </div>
+      `;
+      datosEl.style.display = 'block';
+      updateChqDevResumen();
+    }
+
+    function updateChqDevResumen() {
+      const sel = document.getElementById('chq-dev-select');
+      const id = sel.value;
+      const c = CHEQUES_DATA.find(x => x.id === id);
+      const alertTxt = document.getElementById('chq-dev-alert-txt');
+      if (!c || !alertTxt) return;
+      const gasto = parseMoneyInput(document.getElementById('chq-dev-gasto').value);
+      const total = c.monto + gasto;
+      alertTxt.innerHTML = `Se generará una <strong>Nota de Débito</strong> por <strong>${money(total)}</strong> en la cuenta corriente de <strong>${c.clienteAsociado}</strong>, restituyendo la deuda originalmente cancelada por este cheque${gasto > 0 ? ` (incluye ${money(gasto)} de gasto administrativo)` : ''}.`;
+    }
+
+    function actualizarBadgesClienteEnUI(nombreCliente) {
+      const client = CLIENTES_DATA[nombreCliente];
+      if (!client) return;
+      if (currentClient === nombreCliente) {
+        const pendEl = document.getElementById('cl-det-pendiente');
+        const dispEl = document.getElementById('cl-det-disponible');
+        if (pendEl) pendEl.textContent = money(client.pendiente);
+        if (dispEl) dispEl.textContent = money(client.disponible);
+        const badgeDisp = document.getElementById('cl-det-disponible-badge');
+        if (badgeDisp) {
+          if (client.disponible < 0) { badgeDisp.style.background = 'var(--red-s)'; badgeDisp.style.color = 'var(--red)'; badgeDisp.style.borderColor = 'rgba(226,75,74,.2)'; }
+          else if (client.disponible < 5000) { badgeDisp.style.background = 'var(--amber-s)'; badgeDisp.style.color = 'var(--amber)'; badgeDisp.style.borderColor = 'rgba(186,117,23,.2)'; }
+          else { badgeDisp.style.background = 'var(--green-s)'; badgeDisp.style.color = 'var(--green)'; badgeDisp.style.borderColor = 'rgba(29,158,117,.2)'; }
+        }
+        renderLibroMayor();
+      }
+      const tableRows = document.querySelectorAll('#pg-cc-resumen tbody tr');
+      tableRows.forEach(row => {
+        const nameDiv = row.querySelector('td:nth-child(2) div:first-child');
+        if (nameDiv && nameDiv.textContent.trim() === nombreCliente) {
+          const balanceSpan = row.querySelector('td:nth-child(4) span');
+          if (balanceSpan) {
+            balanceSpan.textContent = money(client.pendiente);
+            balanceSpan.className = client.pendiente <= 0 ? 'bdg bdg-g' : 'bdg bdg-r';
+          }
+          const disponibleTd = row.querySelector('td:nth-child(5)');
+          if (disponibleTd) {
+            disponibleTd.textContent = money(client.disponible);
+            disponibleTd.style.color = client.disponible < 0 ? 'var(--red)' : (client.disponible < 5000 ? 'var(--amber)' : 'var(--green)');
+          }
+        }
+      });
+    }
+
+    function confirmarDevolucionCheque() {
+      const sel = document.getElementById('chq-dev-select');
+      const id = sel.value;
+      if (!id) { alert('Seleccioná el cheque depositado que fue rechazado.'); return; }
+      const c = CHEQUES_DATA.find(x => x.id === id);
+      if (!c) return;
+
+      const fecha = document.getElementById('chq-dev-fecha').value;
+      if (!fecha) { alert('Ingresá la fecha de rechazo.'); return; }
+      const motivo = document.getElementById('chq-dev-motivo').value;
+      const obs = document.getElementById('chq-dev-obs').value.trim();
+      const gasto = parseMoneyInput(document.getElementById('chq-dev-gasto').value);
+      const totalDebito = c.monto + gasto;
+
+      const client = CLIENTES_DATA[c.clienteAsociado];
+      let ndDocStr = null;
+      if (client) {
+        let nextDocNum = 1;
+        client.movimientos.forEach(m => {
+          if (m.tipo === 'ND') {
+            const num = parseInt(m.doc.replace('ND-2026-', ''), 10);
+            if (!isNaN(num) && num >= nextDocNum) nextDocNum = num + 1;
+          }
+        });
+        ndDocStr = 'ND-2026-' + String(nextDocNum).padStart(4, '0');
+
+        let concepto = `Devolución — Cheque N° ${c.numCheque} rechazado (${motivo})`;
+        if (obs) concepto += ` — ${obs}`;
+
+        client.movimientos.push({
+          fecha: fecha,
+          tipo: 'ND',
+          concepto: concepto,
+          cargo: totalDebito,
+          pago: 0,
+          doc: ndDocStr,
+          motivoAnulacion: motivo
+        });
+
+        client.pendiente += totalDebito;
+        client.disponible -= totalDebito;
+        actualizarBadgesClienteEnUI(c.clienteAsociado);
+      }
+
+      c.estado = 'Rechazado';
+      c.fechaRechazo = fecha;
+      c.motivoRechazo = motivo;
+      c.gastoAdmin = gasto;
+      c.observaciones = obs;
+      c.ndDoc = ndDocStr;
+      c.deposito = '—';
+
+      go('cheques-informe');
+
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:fixed;top:60px;right:24px;background:#e24b4a;color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.2);animation:slideInRight .2s ease;max-width:340px';
+      banner.textContent = `✓ Cheque N° ${c.numCheque} rechazado. ${ndDocStr ? 'Nota de Débito ' + ndDocStr + ' generada por ' + money(totalDebito) + '.' : ''}`;
+      document.body.appendChild(banner);
+      setTimeout(() => banner.remove(), 4200);
+    }
+
+    renderChequesInforme();
+  </script>
+  <style>
+    @keyframes slideInRight {
+      from {
+        transform: translateX(60px);
+        opacity: 0
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1
+      }
+    }
+  </style>
+</body>
+
+</html>
